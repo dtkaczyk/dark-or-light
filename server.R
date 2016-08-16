@@ -47,7 +47,15 @@ shinyServer(function(input, output) {
         dl <- c(0, 0)
         for (x in 1:lenX) {
             thisdl <- table(predict(clustering, pixels[x,,]))
-            dl <- dl + c(thisdl[["1"]], thisdl[["2"]])
+            count1 <- 0
+            if ("1" %in% names(thisdl)) {
+                count1 <- thisdl[["1"]]
+            }
+            count2 <- 0
+            if ("2" %in% names(thisdl)) {
+                count2 <- thisdl[["2"]]
+            }
+            dl <- dl + c(count1, count2)
         }
         dl <- dl / sum(dl)
         names(dl) <- rgb(clustering@centers)
