@@ -5,6 +5,19 @@ library(flexclust)
 
 shinyServer(function(input, output) {
     
+    output$inputImage <- renderImage({
+        image <- input$image
+        if (is.null(image)) {
+            return(list(src=""))
+        }
+        return(list(
+                src = image$datapath,
+                filetype = "image/jpeg",
+                alt = "Original image",
+                width=250
+            ))
+    }, deleteFile = FALSE)
+    
     colorSummary <- reactive({
         image <- input$image
         if (is.null(image))

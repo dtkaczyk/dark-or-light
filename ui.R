@@ -11,7 +11,8 @@ shinyUI(fluidPage(
                           'image/jpeg',
                           '.jpg',
                           '.jpeg'
-                      ))
+                      )),
+            imageOutput("inputImage")
         ),
         
         mainPanel(
