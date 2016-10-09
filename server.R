@@ -2,6 +2,7 @@ library(shiny)
 library(ggplot2)
 library(jpeg)
 library(flexclust)
+library(gridExtra)
 
 shinyServer(function(input, output) {
     
