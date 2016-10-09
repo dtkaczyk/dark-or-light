@@ -75,20 +75,6 @@ shinyServer(function(input, output) {
         list(dl = dl, cols = cols)
     })
     
-    output$barplotfull <- renderPlot({
-        colors <- colorSummary()$cols
-        colors <- data.frame(color=names(colors), percentage=colors)
-        colorScale <- sort(as.character(colors$color))
-        ggplot(colors, 
-               aes(x = colors$color, y = colors$percentage, fill = colors$color)) +
-            geom_bar(stat = "identity") + 
-            scale_fill_manual(values = colorScale) +
-            xlab("Colors") + ylab("Fraction of the image") +
-            ggtitle("Division into main colors") +
-            theme(text=element_text(size=20)) +
-            guides(fill=FALSE)
-    })
-    
     output$barplot <- renderPlot({
         colors <- colorSummary()$dl
         colors <- data.frame(color=names(colors), percentage=colors)

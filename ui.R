@@ -16,8 +16,7 @@ shinyUI(fluidPage(
         ),
         
         mainPanel(
-            plotOutput("barplot"),
-            plotOutput("barplotfull")
+            plotOutput("barplot")
         )
     )
 ))
