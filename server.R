@@ -59,11 +59,38 @@ shinyServer(function(input, output) {
         }
         dl <- dl / sum(dl)
         names(dl) <- rgb(clustering@centers)
-        dl
+        
+        pixels <- round(pixels)
+        cols <- rep(0, 8)
+        names(cols) <- c("#000000", "#0000FF", "#00FF00", "#00FFFF",
+                     "#FF0000", "#FF00FF", "#FFFF00", "#FFFFFF")
+        for (x in 1:lenX) {
+            thisdl <- table(rgb(pixels[x,,]))
+            for (n in names(thisdl)) {
+                cols[[n]] <- cols[[n]] + thisdl[[n]]
+            }
+        }
+        cols <- cols / sum(cols)
+        
+        list(dl = dl, cols = cols)
+    })
+    
+    output$barplotfull <- renderPlot({
+        colors <- colorSummary()$cols
+        colors <- data.frame(color=names(colors), percentage=colors)
+        colorScale <- sort(as.character(colors$color))
+        ggplot(colors, 
+               aes(x = colors$color, y = colors$percentage, fill = colors$color)) +
+            geom_bar(stat = "identity") + 
+            scale_fill_manual(values = colorScale) +
+            xlab("Colors") + ylab("Fraction of the image") +
+            ggtitle("Division into main colors") +
+            theme(text=element_text(size=20)) +
+            guides(fill=FALSE)
     })
     
     output$barplot <- renderPlot({
-        colors <- colorSummary()
+        colors <- colorSummary()$dl
         colors <- data.frame(color=names(colors), percentage=colors)
         colorScale <- sort(as.character(colors$color))
         ggplot(colors, 
