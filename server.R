@@ -43,48 +43,29 @@ shinyServer(function(input, output) {
             i <- i + 1
         }
         
-        clustering <- kcca(data, 2, family = kccaFamily("kmedians"))
-        dl <- c(0, 0)
-        for (x in 1:lenX) {
-            thisdl <- table(predict(clustering, pixels[x,,]))
-            count1 <- 0
-            if ("1" %in% names(thisdl)) {
-                count1 <- thisdl[["1"]]
-            }
-            count2 <- 0
-            if ("2" %in% names(thisdl)) {
-                count2 <- thisdl[["2"]]
-            }
-            dl <- dl + c(count1, count2)
-        }
-        dl <- dl / sum(dl)
-        names(dl) <- rgb(clustering@centers)
+        data$sum <- 0.299 * data$R + 0.587 * data$G + 0.114 * data$B
+        data <- data[order(data$sum),]
+        dark <- data[data$sum < 0.5,]
+        light <- data[data$sum >= 0.5,]
         
-        pixels <- round(pixels)
-        cols <- rep(0, 8)
-        names(cols) <- c("#000000", "#0000FF", "#00FF00", "#00FFFF",
-                     "#FF0000", "#FF00FF", "#FFFF00", "#FFFFFF")
-        for (x in 1:lenX) {
-            thisdl <- table(rgb(pixels[x,,]))
-            for (n in names(thisdl)) {
-                cols[[n]] <- cols[[n]] + thisdl[[n]]
-            }
-        }
-        cols <- cols / sum(cols)
+        darkMean <- rgb(mean(dark$R), mean(dark$G), mean(dark$B))
+        lightMean <- rgb(mean(light$R), mean(light$G), mean(light$B))
         
-        list(dl = dl, cols = cols)
+        twoColors <- data.frame(color = c(darkMean, lightMean), 
+                             percentage = c(nrow(dark)/nrow(data), nrow(light)/nrow(data)))
+        
+        list(data = data, dark = dark, light = light, twoColors = twoColors)
     })
     
     output$barplot <- renderPlot({
-        colors <- colorSummary()$dl
-        colors <- data.frame(color=names(colors), percentage=colors)
-        colorScale <- sort(as.character(colors$color))
-        ggplot(colors, 
-               aes(x = colors$color, y = colors$percentage, fill = colors$color)) +
+        twoColors <- colorSummary()$twoColors
+        colorScale <- sort(as.character(twoColors$color))
+        
+        ggplot(twoColors,
+               aes(x = twoColors$color, y = twoColors$percentage, fill = twoColors$color)) +
             geom_bar(stat = "identity") + 
             scale_fill_manual(values = colorScale) +
             xlab("Colors") + ylab("Fraction of the image") +
-            ggtitle("Division into main colors") +
             theme(text=element_text(size=20)) +
             guides(fill=FALSE)
     })
