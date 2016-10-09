@@ -12,7 +12,8 @@ shinyUI(fluidPage(
                           '.jpg',
                           '.jpeg'
                       )),
-            imageOutput("inputImage")
+            imageOutput("inputImage"),
+            imageOutput("sortedImage")
         ),
         
         mainPanel(

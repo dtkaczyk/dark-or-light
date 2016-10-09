@@ -64,8 +64,15 @@ shinyServer(function(input, output) {
         moreColors <- c(colDark[1:3], white, colLight[1:3],
                   colDark[4:6], white, colLight[4:6],
                   colDark[7:9], white, colLight[7:9])
-          
-        list(data = data, dark = dark, light = light, twoColors = twoColors, moreColors = moreColors)
+         
+        sortedPixels <- array(0, dim = c(sampleLenX, sampleLenY, 3))
+        sortedPixels[,,1] <- matrix(data$R, nrow = sampleLenX, ncol = sampleLenY)
+        sortedPixels[,,2] <- matrix(data$G, nrow = sampleLenX, ncol = sampleLenY)
+        sortedPixels[,,3] <- matrix(data$B, nrow = sampleLenX, ncol = sampleLenY)
+        sortedFile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = "jpg")
+        writeJPEG(sortedPixels, target = sortedFile)
+         
+        list(data = data, dark = dark, light = light, twoColors = twoColors, moreColors = moreColors, sortedFile = sortedFile)
     })
     
     output$barplot <- renderPlot({
@@ -89,4 +96,17 @@ shinyServer(function(input, output) {
             grid.rect(gp=gpar(fill=NA))
         }
     })
+    
+    output$sortedImage <- renderImage({
+        path <- colorSummary()$sortedFile
+        if (is.null(path)) {
+            return(list(src=""))
+        }
+        return(list(
+            src = path,
+            filetype = "image/jpeg",
+            alt = "Sorted image",
+            width=250
+        ))
+    }, deleteFile = FALSE)
 })
