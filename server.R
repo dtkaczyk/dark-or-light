@@ -54,7 +54,18 @@ shinyServer(function(input, output) {
         twoColors <- data.frame(color = c(darkMean, lightMean), 
                              percentage = c(nrow(dark)/nrow(data), nrow(light)/nrow(data)))
         
-        list(data = data, dark = dark, light = light, twoColors = twoColors)
+        clusteringDark <- kcca(dark[,c(1,2,3)], 9, family = kccaFamily("kmedians"))
+        colDark <- apply(clusteringDark@centers, 1, function(x) rgb(x[1], x[2], x[3]))
+        clusteringLight <- kcca(light[,c(1,2,3)], 9, family = kccaFamily("kmedians"))
+        colLight <- apply(clusteringLight@centers, 1, function(x) rgb(x[1], x[2], x[3]))
+        
+        
+        white <- "#FFFFFF"
+        moreColors <- c(colDark[1:3], white, colLight[1:3],
+                  colDark[4:6], white, colLight[4:6],
+                  colDark[7:9], white, colLight[7:9])
+          
+        list(data = data, dark = dark, light = light, twoColors = twoColors, moreColors = moreColors)
     })
     
     output$barplot <- renderPlot({
@@ -68,5 +79,14 @@ shinyServer(function(input, output) {
             xlab("Colors") + ylab("Fraction of the image") +
             theme(text=element_text(size=20)) +
             guides(fill=FALSE)
+    })
+    
+    output$colors <- renderPlot({
+        cols <- colorSummary()$moreColors
+        if (!is.null(cols)) {
+            gs <- lapply(cols, function(x) grobTree(rectGrob(gp=gpar(fill=x, col="white")), textGrob("")))
+            grid.arrange(grobs=gs, ncol=7)
+            grid.rect(gp=gpar(fill=NA))
+        }
     })
 })
