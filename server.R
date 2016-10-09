@@ -72,7 +72,7 @@ shinyServer(function(input, output) {
         sortedFile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = "jpg")
         writeJPEG(sortedPixels, target = sortedFile)
          
-        list(data = data, dark = dark, light = light, twoColors = twoColors, moreColors = moreColors, sortedFile = sortedFile)
+        list(twoColors = twoColors, moreColors = moreColors, sortedFile = sortedFile)
     })
     
     output$barplot <- renderPlot({
