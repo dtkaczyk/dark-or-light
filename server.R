@@ -56,16 +56,11 @@ shinyServer(function(input, output) {
                              percentage = c(nrow(dark)/nrow(data), nrow(light)/nrow(data)))
         
         clusteringDark <- kcca(dark[,c(1,2,3)], 9, family = kccaFamily("kmedians"))
-        colDark <- apply(clusteringDark@centers, 1, function(x) rgb(x[1], x[2], x[3]))
+        darkColors <- apply(clusteringDark@centers, 1, function(x) rgb(x[1], x[2], x[3]))
+        
         clusteringLight <- kcca(light[,c(1,2,3)], 9, family = kccaFamily("kmedians"))
-        colLight <- apply(clusteringLight@centers, 1, function(x) rgb(x[1], x[2], x[3]))
+        lightColors <- apply(clusteringLight@centers, 1, function(x) rgb(x[1], x[2], x[3]))
         
-        
-        white <- "#FFFFFF"
-        moreColors <- c(colDark[1:3], white, colLight[1:3],
-                  colDark[4:6], white, colLight[4:6],
-                  colDark[7:9], white, colLight[7:9])
-         
         sortedPixels <- array(0, dim = c(sampleLenX, sampleLenY, 3))
         sortedPixels[,,1] <- matrix(data$R, nrow = sampleLenX, ncol = sampleLenY)
         sortedPixels[,,2] <- matrix(data$G, nrow = sampleLenX, ncol = sampleLenY)
@@ -73,7 +68,7 @@ shinyServer(function(input, output) {
         sortedFile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = "jpg")
         writeJPEG(sortedPixels, target = sortedFile)
          
-        list(twoColors = twoColors, moreColors = moreColors, sortedFile = sortedFile)
+        list(twoColors = twoColors, darkColors = darkColors, lightColors = lightColors, sortedFile = sortedFile)
     })
     
     output$barplot <- renderPlot({
@@ -89,11 +84,20 @@ shinyServer(function(input, output) {
             guides(fill=FALSE)
     })
     
-    output$colors <- renderPlot({
-        cols <- colorSummary()$moreColors
+    output$darkColors <- renderPlot({
+        cols <- colorSummary()$darkColors
         if (!is.null(cols)) {
             gs <- lapply(cols, function(x) grobTree(rectGrob(gp=gpar(fill=x, col="white")), textGrob("")))
-            grid.arrange(grobs=gs, ncol=7)
+            grid.arrange(grobs=gs, ncol=3, top = textGrob("Dark colors", gp=gpar(fontsize=20)))
+            grid.rect(gp=gpar(fill=NA))
+        }
+    })
+    
+    output$lightColors <- renderPlot({
+        cols <- colorSummary()$lightColors
+        if (!is.null(cols)) {
+            gs <- lapply(cols, function(x) grobTree(rectGrob(gp=gpar(fill=x, col="white")), textGrob("")))
+            grid.arrange(grobs=gs, ncol=3, top = textGrob("Light colors", gp=gpar(fontsize=20)))
             grid.rect(gp=gpar(fill=NA))
         }
     })

@@ -32,8 +32,11 @@ shinyUI(fluidPage(
                 )
             ),
             fluidRow(
-                column(10, align = "center", div(style = "margin-top: 50px;"),
-                       plotOutput("colors", width = "500px", height = "270px")
+                column(5, align = "center", div(style = "margin-top: 50px;"),
+                       plotOutput("darkColors", width = "300px", height = "300px")
+                ),
+                column(5, align = "center", div(style = "margin-top: 50px;"),
+                       plotOutput("lightColors", width = "300px", height = "300px")
                 )
             )
         )
