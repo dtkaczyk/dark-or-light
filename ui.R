@@ -6,19 +6,36 @@ shinyUI(fluidPage(
     
     sidebarLayout(
         sidebarPanel(
-            fileInput('image', 'Choose image to upload',
-                      accept = c(
+            fluidRow(
+                fileInput('image', 'Choose image to upload',
+                          accept = c(
                           'image/jpeg',
                           '.jpg',
                           '.jpeg'
-                      )),
-            imageOutput("inputImage"),
-            imageOutput("sortedImage")
+                      ))
+            ),
+            fluidRow(
+                column(12, align = "center", imageOutput("inputImage")
+                )
+            ),
+            fluidRow(
+                column(12, align = "center", div(style = "margin-top: -100px;"),
+                       imageOutput("sortedImage")
+                )
+            )
         ),
         
         mainPanel(
-            plotOutput("barplot"),
-            plotOutput("colors")
+            fluidRow(
+                column(10, align = "center",
+                       plotOutput('barplot', width = "500px", height = "300px")
+                )
+            ),
+            fluidRow(
+                column(10, align = "center", div(style = "margin-top: 50px;"),
+                       plotOutput("colors", width = "500px", height = "270px")
+                )
+            )
         )
     )
 ))
