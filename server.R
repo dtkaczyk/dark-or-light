@@ -93,15 +93,16 @@ shinyServer(function(input, output) {
     
     output$barplot <- renderPlot({
         twoColors <- colorSummary()$twoColors
-        colorScale <- sort(as.character(twoColors$color))
-        
-        ggplot(twoColors, aes(x = twoColors$color, y = twoColors$percentage,
+        if (!is.null(twoColors)) {
+            colorScale <- sort(as.character(twoColors$color))
+            ggplot(twoColors, aes(x = twoColors$color, y = twoColors$percentage,
                               fill = twoColors$color)) +
-            geom_bar(stat = "identity") + 
-            scale_fill_manual(values = colorScale) +
-            xlab("Colors") + ylab("Fraction of the image") +
-            theme(text = element_text(size = 20)) +
-            guides(fill = FALSE)
+                geom_bar(stat = "identity") + 
+                scale_fill_manual(values = colorScale) +
+                xlab("Colors") + ylab("Fraction of the image") +
+                theme(text = element_text(size = 20)) +
+                guides(fill = FALSE)
+        }
     })
     
     output$darkColors <- renderPlot({
