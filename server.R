@@ -60,11 +60,13 @@ shinyServer(function(input, output) {
                                family = kccaFamily("kmedians"))
         darkColors <- apply(clusteringDark@centers, 1, 
                             function(x) rgb(x[1], x[2], x[3]))
+        darkFractions <- round(clusteringDark@clusinfo$size / sampleLen, digits = 4)
         
         clusteringLight <- kcca(light[,c(1,2,3)], 4, 
                                 family = kccaFamily("kmedians"))
         lightColors <- apply(clusteringLight@centers, 1, 
                              function(x) rgb(x[1], x[2], x[3]))
+        lightFractions <- round(clusteringLight@clusinfo$size / sampleLen, digits = 4)
         
         tickLen <- 5
         sortedPixels <- array(1, dim = c(sampleLenX + 2 * tickLen, sampleLenY, 3))
@@ -84,10 +86,12 @@ shinyServer(function(input, output) {
                                fileext = "jpg")
         writeJPEG(sortedPixels, target = sortedFile, quality = 1)
          
-        list(twoColors   = twoColors,
-             darkColors  = darkColors,
-             lightColors = lightColors,
-             sortedFile  = sortedFile
+        list(twoColors      = twoColors,
+             darkColors     = darkColors,
+             lightColors    = lightColors,
+             darkFractions  = darkFractions,
+             lightFractions = lightFractions,
+             sortedFile     = sortedFile
         )
     })
     
@@ -107,10 +111,12 @@ shinyServer(function(input, output) {
     
     output$darkColors <- renderPlot({
         cols <- colorSummary()$darkColors
+        fracs <- colorSummary()$darkFractions
+        data <- data.frame(cols = cols, fracs = fracs)
         if (!is.null(cols)) {
-            gs <- lapply(cols, 
-                         function(x) grobTree(rectGrob(
-                             gp = gpar(fill = x, col = "white")), textGrob("")))
+            gs <- apply(data, 1, function(x) grobTree(rectGrob(
+                                gp = gpar(fill = x[1], col = "white")), 
+                                textGrob(x[2], gp = gpar(fontsize = 20, col = "white"))))
             grid.arrange(grobs = gs, ncol = 2, 
                          top = textGrob("Dark colors", gp = gpar(fontsize = 20)))
             grid.rect(gp = gpar(fill = NA))
@@ -119,10 +125,12 @@ shinyServer(function(input, output) {
     
     output$lightColors <- renderPlot({
         cols <- colorSummary()$lightColors
+        fracs <- colorSummary()$lightFractions
+        data <- data.frame(cols = cols, fracs = fracs)
         if (!is.null(cols)) {
-            gs <- lapply(cols, 
-                         function(x) grobTree(rectGrob(
-                             gp = gpar(fill = x, col = "white")), textGrob("")))
+            gs <- apply(data, 1, function(x) grobTree(rectGrob(
+                                gp = gpar(fill = x[1], col = "white")), 
+                                textGrob(x[2], gp = gpar(fontsize = 20, col = "black"))))
             grid.arrange(grobs = gs, ncol=2, 
                          top = textGrob("Light colors", gp = gpar(fontsize = 20)))
             grid.rect(gp = gpar(fill = NA))
