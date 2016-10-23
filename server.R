@@ -66,13 +66,23 @@ shinyServer(function(input, output) {
         lightColors <- apply(clusteringLight@centers, 1, 
                              function(x) rgb(x[1], x[2], x[3]))
         
-        sortedPixels <- array(0, dim = c(sampleLenX, sampleLenY, 3))
-        sortedPixels[,,1] <- matrix(data$R, nrow = sampleLenX, ncol = sampleLenY)
-        sortedPixels[,,2] <- matrix(data$G, nrow = sampleLenX, ncol = sampleLenY)
-        sortedPixels[,,3] <- matrix(data$B, nrow = sampleLenX, ncol = sampleLenY)
+        tickLen <- 5
+        sortedPixels <- array(1, dim = c(sampleLenX + 2 * tickLen, sampleLenY, 3))
+        for (i in round(0:10 * (sampleLenY-1)/10 + 1)) {
+            i <- max(1, i)
+            i <- min(sampleLenY, i)
+            sortedPixels[1:tickLen,i,2:3] <- 0
+            sortedPixels[(sampleLenX+tickLen+1):(sampleLenX+2*tickLen),i,2:3] <- 0
+        }
+        sortedPixels[(tickLen+1):(tickLen+sampleLenX),,1] <- 
+            matrix(data$R, nrow = sampleLenX, ncol = sampleLenY)
+        sortedPixels[(tickLen+1):(tickLen+sampleLenX),,2] <- 
+            matrix(data$G, nrow = sampleLenX, ncol = sampleLenY)
+        sortedPixels[(tickLen+1):(tickLen+sampleLenX),,3] <- 
+            matrix(data$B, nrow = sampleLenX, ncol = sampleLenY)
         sortedFile <- tempfile(pattern = "file", tmpdir = tempdir(), 
                                fileext = "jpg")
-        writeJPEG(sortedPixels, target = sortedFile)
+        writeJPEG(sortedPixels, target = sortedFile, quality = 1)
          
         list(twoColors   = twoColors,
              darkColors  = darkColors,
