@@ -56,12 +56,12 @@ shinyServer(function(input, output) {
                                 percentage = c(nrow(dark)/nrow(data), 
                                                nrow(light)/nrow(data)))
         
-        clusteringDark <- kcca(dark[,c(1,2,3)], 9, 
+        clusteringDark <- kcca(dark[,c(1,2,3)], 4, 
                                family = kccaFamily("kmedians"))
         darkColors <- apply(clusteringDark@centers, 1, 
                             function(x) rgb(x[1], x[2], x[3]))
         
-        clusteringLight <- kcca(light[,c(1,2,3)], 9, 
+        clusteringLight <- kcca(light[,c(1,2,3)], 4, 
                                 family = kccaFamily("kmedians"))
         lightColors <- apply(clusteringLight@centers, 1, 
                              function(x) rgb(x[1], x[2], x[3]))
@@ -100,7 +100,7 @@ shinyServer(function(input, output) {
             gs <- lapply(cols, 
                          function(x) grobTree(rectGrob(
                              gp = gpar(fill = x, col = "white")), textGrob("")))
-            grid.arrange(grobs = gs, ncol = 3, 
+            grid.arrange(grobs = gs, ncol = 2, 
                          top = textGrob("Dark colors", gp = gpar(fontsize = 20)))
             grid.rect(gp = gpar(fill = NA))
         }
@@ -112,7 +112,7 @@ shinyServer(function(input, output) {
             gs <- lapply(cols, 
                          function(x) grobTree(rectGrob(
                              gp = gpar(fill = x, col = "white")), textGrob("")))
-            grid.arrange(grobs = gs, ncol=3, 
+            grid.arrange(grobs = gs, ncol=2, 
                          top = textGrob("Light colors", gp = gpar(fontsize = 20)))
             grid.rect(gp = gpar(fill = NA))
         }
