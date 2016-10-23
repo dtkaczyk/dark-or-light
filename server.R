@@ -27,7 +27,7 @@ shinyServer(function(input, output) {
         pixels <- readJPEG(image$datapath)
         lenX <- dim(pixels)[1]
         lenY <- dim(pixels)[2]
-        sampleFrac <- .05
+        sampleFrac <- sqrt(20000 / lenX / lenY)
         sampleLenX <- round(sampleFrac * lenX)
         sampleLenY <- round(sampleFrac * lenY)
         sampleLen <- sampleLenX * sampleLenY
