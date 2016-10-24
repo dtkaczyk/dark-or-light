@@ -3,24 +3,12 @@ Color Analysis
 Dominika Tkaczyk
 October 24, 2016
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This document contains the analysis of colors' brightness. The main problem is the following: how can we automatically decide whether the color is dark or light given it's R, G, B components.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-``` r
-summary(cars)
-```
-
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
-
-You can also embed plots, for example:
-
-![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-2-1.png)
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+    ##        R                  G                  B            L      
+    ##  Min.   :0.001176   Min.   :0.007518   Min.   :0.004466   D:142  
+    ##  1st Qu.:0.254549   1st Qu.:0.229155   1st Qu.:0.281304   L:158  
+    ##  Median :0.500458   Median :0.476798   Median :0.533076          
+    ##  Mean   :0.499175   Mean   :0.477213   Mean   :0.514634          
+    ##  3rd Qu.:0.741142   3rd Qu.:0.713870   3rd Qu.:0.748852          
+    ##  Max.   :0.998121   Max.   :0.999064   Max.   :0.997008

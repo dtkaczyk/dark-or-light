@@ -5,18 +5,13 @@ date: "October 24, 2016"
 output: github_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r}
-summary(cars)
-```
-
-You can also embed plots, for example:
+This document contains the analysis of colors' brightness. The main problem is the following: how can we
+automatically decide whether the color is dark or light given it's R, G, B components.
 
 ```{r, echo=FALSE}
-plot(cars)
+t <- read.csv("data/data.csv", header=FALSE)
+t <- t[,c(2,3,4,5)]
+colnames(t) <- c("R", "G", "B", "L")
+summary(t)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
