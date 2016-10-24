@@ -1,0 +1,12 @@
+sampleSize: 20000
+
+predict:
+    R: 0.299
+    G: 0.587
+    B: 0.114
+
+clustering:
+  type: kmedians
+  num: 4
+
+tickLen: 5

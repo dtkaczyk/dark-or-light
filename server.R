@@ -3,8 +3,11 @@ library(ggplot2)
 library(jpeg)
 library(flexclust)
 library(gridExtra)
+library(yaml)
 
 shinyServer(function(input, output) {
+    
+    conf = yaml.load_file("config.yml")
     
     output$inputImage <- renderImage({
         image <- input$image
@@ -23,11 +26,11 @@ shinyServer(function(input, output) {
         image <- input$image
         if (is.null(image))
             return(NULL)
-        
+
         pixels <- readJPEG(image$datapath)
         lenX <- dim(pixels)[1]
         lenY <- dim(pixels)[2]
-        sampleFrac <- sqrt(20000 / lenX / lenY)
+        sampleFrac <- sqrt(conf$sampleSize / lenX / lenY)
         sampleLenX <- round(sampleFrac * lenX)
         sampleLenY <- round(sampleFrac * lenY)
         sampleLen <- sampleLenX * sampleLenY
@@ -44,7 +47,7 @@ shinyServer(function(input, output) {
             i <- i + 1
         }
         
-        data$sum <- 0.299 * data$R + 0.587 * data$G + 0.114 * data$B
+        data$sum <- conf$predict$R * data$R + conf$predict$G * data$G + conf$predict$B * data$B
         data <- data[order(data$sum),]
         dark <- data[data$sum < 0.5,]
         light <- data[data$sum >= 0.5,]
@@ -57,30 +60,29 @@ shinyServer(function(input, output) {
                                                nrow(light)/nrow(data)))
         
         clusteringDark <- kcca(dark[,c(1,2,3)], 4, 
-                               family = kccaFamily("kmedians"))
+                               family = kccaFamily(conf$clustering$type))
         darkColors <- apply(clusteringDark@centers, 1, 
                             function(x) rgb(x[1], x[2], x[3]))
-        darkFractions <- round(clusteringDark@clusinfo$size / sampleLen, digits = 4)
+        darkFractions <- round(clusteringDark@clusinfo$size / sampleLen, digits = conf$clustering$num)
         
         clusteringLight <- kcca(light[,c(1,2,3)], 4, 
-                                family = kccaFamily("kmedians"))
+                                family = kccaFamily(conf$clustering$type))
         lightColors <- apply(clusteringLight@centers, 1, 
                              function(x) rgb(x[1], x[2], x[3]))
-        lightFractions <- round(clusteringLight@clusinfo$size / sampleLen, digits = 4)
+        lightFractions <- round(clusteringLight@clusinfo$size / sampleLen, digits = conf$clustering$num)
         
-        tickLen <- 5
-        sortedPixels <- array(1, dim = c(sampleLenX + 2 * tickLen, sampleLenY, 3))
+        sortedPixels <- array(1, dim = c(sampleLenX + 2 * conf$tickLen, sampleLenY, 3))
         for (i in round(0:10 * (sampleLenY-1)/10 + 1)) {
             i <- max(1, i)
             i <- min(sampleLenY, i)
-            sortedPixels[1:tickLen,i,2:3] <- 0
-            sortedPixels[(sampleLenX+tickLen+1):(sampleLenX+2*tickLen),i,2:3] <- 0
+            sortedPixels[1:conf$tickLen,i,2:3] <- 0
+            sortedPixels[(sampleLenX+conf$tickLen+1):(sampleLenX+2*conf$tickLen),i,2:3] <- 0
         }
-        sortedPixels[(tickLen+1):(tickLen+sampleLenX),,1] <- 
+        sortedPixels[(conf$tickLen+1):(conf$tickLen+sampleLenX),,1] <- 
             matrix(data$R, nrow = sampleLenX, ncol = sampleLenY)
-        sortedPixels[(tickLen+1):(tickLen+sampleLenX),,2] <- 
+        sortedPixels[(conf$tickLen+1):(conf$tickLen+sampleLenX),,2] <- 
             matrix(data$G, nrow = sampleLenX, ncol = sampleLenY)
-        sortedPixels[(tickLen+1):(tickLen+sampleLenX),,3] <- 
+        sortedPixels[(conf$tickLen+1):(conf$tickLen+sampleLenX),,3] <- 
             matrix(data$B, nrow = sampleLenX, ncol = sampleLenY)
         sortedFile <- tempfile(pattern = "file", tmpdir = tempdir(), 
                                fileext = "jpg")
