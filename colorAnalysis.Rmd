@@ -42,13 +42,3 @@ set.seed(2690)
 set <- createColorSet(size = 20)
 visualizeColorSet(set)
 ```
-
-
-
-```{r, echo=FALSE}
-t <- read.csv("data/data.csv", header=FALSE)
-t <- t[,c(2,3,4,5)]
-colnames(t) <- c("R", "G", "B", "L")
-summary(t)
-```
-
