@@ -13,6 +13,6 @@ visualizeColorSet <- function(data, size = min(30, nrow(data)), offset = 1, rand
     qplot(sData$Red, sData$Green) +
         xlim(0, 1.05) + ylim(0, 1.05) +
         xlab("Red") + ylab("Green") +
-        geom_point(colour = rgb(sData$Red, sData$Green, sData$Blue), size = 10) + 
-        geom_text(label = row.names(sData), hjust = -1, vjust = -1)
+        geom_point(colour = rgb(sData$Red, sData$Green, sData$Blue), size = 7) + 
+        geom_text(label = row.names(sData), hjust = -0.7, vjust = -0.7)
 }

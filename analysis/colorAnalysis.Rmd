@@ -5,6 +5,14 @@ date: "October 24, 2016"
 output: github_document
 ---
 
+```{r, echo=FALSE, warning=FALSE,error=FALSE,message=FALSE}
+# imports
+library(caret)
+library(gridExtra)
+
+source("testSet.R")
+```
+
 # Introduction
 
 In this document we attempt to analyze colors with respect to whether they are dark or light. From now on, we will 
@@ -37,8 +45,119 @@ from uniform distribution for each RGB components separately. Then the colors we
 by the "real" color of the data point and labelled with its number from the data set:
 
 ```{r, echo=FALSE}
-source("testSet.R")
 set.seed(2690)
 set <- createColorSet(size = 20)
 visualizeColorSet(set)
 ```
+
+# Exploratory analysis
+
+Before exploring our dataset, let's first divide it into train and test sets. All the analyses, plotting and
+explorin will be done using only train part. In the end, the test set will be used to give a fair, reliable
+estimate of the prediction's error.
+
+```{r}
+data <- read.csv("data.csv")
+set.seed(2101)
+split <- 0.67
+trainIndex <- createDataPartition(data$Lum, p = split, list = FALSE)
+train <- data[trainIndex,]
+row.names(train) <- NULL
+test <- data[-trainIndex,]
+row.names(test) <- NULL
+```
+
+Our train set contains `r nrow(train)` observation with `r ncol(train)` attributes describing each of them. Let's 
+first see how the first few observation look like:
+
+```{r}
+head(train, n=10)
+```
+
+**Red**, **Green** and **Blue** attributes are numeric, while **Lum** is a categorical variable with two levels: 
+*L* and *D*:
+
+```{r}
+str(train)
+```
+
+Let's now plot the histograms of all the variables:
+
+```{r, echo=FALSE}
+rHist <- ggplot(data=train, aes(train$Red)) + 
+  geom_histogram(aes(y =..count../sum(..count..)), binwidth=0.05, col="black", fill="white")+
+  labs(title="") +
+  labs(x="Red", y="Fraction")
+gHist <- ggplot(data=train, aes(train$Green)) + 
+  geom_histogram(aes(y =..count../sum(..count..)), binwidth=0.05, col="black", fill="white")+
+  labs(title="") +
+  labs(x="Green", y="Fraction")
+bHist <- ggplot(data=train, aes(train$Blue)) + 
+  geom_histogram(aes(y =..count../sum(..count..)), binwidth=0.05, col="black", fill="white")+
+  labs(x="Blue", y="Fraction")
+lAggr <- aggregate(Red ~ Lum, data=train, length)
+lHist <- ggplot(data=lAggr, aes(x=Lum, y=Red/nrow(train))) + 
+    geom_bar(stat = "identity", col="black", fill="white") +
+    labs(x="Lum", y="Fraction")
+grid.arrange(rHist, gHist, bHist, lHist, ncol=2)
+```
+
+The distributions of red, green and blue components seem fairly uniform (this is to be expected, based on how the
+data set was generated). The dark and light classes are also fairly balanced, we have similar number of 
+observations in each class.
+
+Let's also examine the boxplots of each variable divided by the luminance:
+
+```{r, echo=FALSE}
+rbp <- ggplot(train, aes(x=Lum,y=Red,fill=Lum)) + geom_boxplot()
+gbp <- ggplot(train, aes(x=Lum,y=Green,fill=Lum)) + geom_boxplot()
+bbp <- ggplot(train, aes(x=Lum,y=Blue,fill=Lum)) + geom_boxplot()
+grid.arrange(rbp, gbp, bbp, ncol=2)
+```
+
+It can be clearly seen how different color components affect the luminance:
+
+  * green seems to have the most information about the luminance; the means of green components for dark and light
+  colors differ greatly, and the IQRs of the distributions do not overlap,
+  * red seem to be less correlated with luminance; the means are still far apart, but the IQRs are closer,
+  * blue seems to be the worst for luminance prediction, as the distributions are pretty similar.
+  
+This suggest that **Green** variable should be the most important for luminance prediction.
+
+We can also perform statistical tests to confirm this observation more formally. We will use non-parametric
+Kolmogorov–Smirnov test to compare two samples: red/green/blue values for dark and light colors. The p-value will
+indicate how probable it is that the samples come from the same distibution.
+
+```{r}
+ks.test(train[train$Lum=='D',]$Red, train[train$Lum=='L',]$Red)
+ks.test(train[train$Lum=='D',]$Green, train[train$Lum=='L',]$Green)
+ks.test(train[train$Lum=='D',]$Blue, train[train$Lum=='L',]$Blue)
+```
+
+As observed before, in the case of *Blue* we obtained a large p-value, suggesting that the samples are not that 
+different. *Red* and *Green*, however, resulted in a very small p-values, so in these cases the distributions
+indeed vary a lot.
+
+Let's also plot variables against each other; we will also use *Lum* as the color of the points:
+
+```{r}
+pairs(train, col=train$Lum)
+```
+
+Visually, there is no correlation between *Red*, *Green* and *Blue*. Again, this is to be expected due to the way 
+the data set was built. This can be confirmed more formally by calculating the correlations:
+
+```{r}
+cor(train[,1:3])
+```
+
+Visually, it also seems that a combinations of *Red* and *Green* features results in a fairly linear separation
+between the luminance classes. Similar trend can be observed in the *Green* vs. *Blue* plot, but somewhat weaker:
+more points of two classes are "mixed" closed together in the middle area. The plot *Red* vs. *Blue* shows no 
+pattern.
+
+The initial analysis results in the following conclusions:
+
+  * green components seems to be the most informative of the luminance, and blue - the least,
+  * linear methods might be a good approach to the prediction problem.
+
