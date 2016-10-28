@@ -167,7 +167,6 @@ Function *evaluate* takes a model function and returns a vector of 10 accuracies
 Example execution (this random model function ignores the training set):
 
 ``` r
-set.seed(1645789)
 modelRandom <- function(training, testing) {
     set.seed(1645789)
     sample(c("D", "L"), nrow(testing), replace = TRUE)
@@ -239,8 +238,8 @@ Let's also compare out baseline models visually:
 
 ``` r
 visualizeResults(list(
-    "Always light" = modelAlwaysLightResult,
-    "Half sum" = modelHalfSumResult,
+    "Always light"  = modelAlwaysLightResult,
+    "Half sum"      = modelHalfSumResult,
     "Standard luma" = modelStandardLumaResult
 ))
 ```
