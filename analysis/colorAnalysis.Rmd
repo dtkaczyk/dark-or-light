@@ -160,3 +160,10 @@ The initial analysis results in the following conclusions:
   * green components seem to be the most informative of the luminance, and blue - the least,
   * linear methods might be a good approach to the prediction problem, as the plots show the possibility of a 
   linear separation between dark and light classes.
+
+# Evaluation
+
+# Prediction models
+
+# Conclusions
+
