@@ -12,3 +12,12 @@ evaluate <- function(data, modelFunction) {
     }
     accuracy
 }
+
+cvSummary <- function(results) {
+    list(mean = mean(results), sd = sd(results))
+}
+
+visualizeResults <- function(resultList) {
+    modelsResults <- data.frame(Accuracy = unlist(resultList), Model = unlist(lapply(names(resultList), rep, 10)))
+    ggplot(modelsResults, aes(x = Model, y = Accuracy, fill = Model)) + geom_boxplot() + guides(fill = FALSE)
+}

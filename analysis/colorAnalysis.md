@@ -172,14 +172,82 @@ modelRandom <- function(training, testing) {
     set.seed(1645789)
     sample(c("D", "L"), nrow(testing), replace = TRUE)
 }
-evaluate(train, modelRandom)
+cvSummary(evaluate(train, modelRandom))
 ```
 
-    ##  [1] 0.4000000 0.5238095 0.3333333 0.6500000 0.4500000 0.5000000 0.5000000
-    ##  [8] 0.5000000 0.5500000 0.4500000
+    ## $mean
+    ## [1] 0.4857143
+    ## 
+    ## $sd
+    ## [1] 0.08583178
 
 Prediction models
 =================
+
+We will evaluate and compare the following classes of algorithms:
+
+-   simple baseline algorithms, which do not require model learning
+-   linear models: logistic regression, ...
+-   tree-based models: CART, random forest, ...
+-   ...
+
+Baseline models
+---------------
+
+Let's start with a few simple baseline models, which do not require any training at all.
+
+**modelAlwaysLight** predicts *light* for all data points:
+
+``` r
+modelAlwaysLightResult <- evaluate(train, modelAlwaysLight)
+cvSummary(modelAlwaysLightResult)
+```
+
+    ## $mean
+    ## [1] 0.5247619
+    ## 
+    ## $sd
+    ## [1] 0.1051652
+
+**modelHalfSum** predicts *light* when average color components intensity is greater than or equal 0.5, that is when \(c_R + c_G + c_B \geq 1.5\):
+
+``` r
+modelHalfSumResult <- evaluate(train, modelHalfSum)
+cvSummary(modelHalfSumResult)
+```
+
+    ## $mean
+    ## [1] 0.7930952
+    ## 
+    ## $sd
+    ## [1] 0.1006745
+
+**modelStandardLuma** uses the standard luma definition for digital formats (see <https://en.wikipedia.org/wiki/Luma_%28video%29>):
+
+``` r
+modelStandardLumaResult <- evaluate(train, modelStandardLuma)
+cvSummary(modelStandardLumaResult)
+```
+
+    ## $mean
+    ## [1] 0.9157143
+    ## 
+    ## $sd
+    ## [1] 0.04748924
+
+Let's also compare out baseline models visually:
+
+``` r
+visualizeResults(list(
+    "Always light" = modelAlwaysLightResult,
+    "Half sum" = modelHalfSumResult,
+    "Standard luma" = modelStandardLumaResult
+))
+```
+
+![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-15-1.png)
+
+We can clearly see that standard luma equation gives very good results and outperforms other baseline methods.
 
 Conclusions
 ===========
