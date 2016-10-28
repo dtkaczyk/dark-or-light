@@ -123,6 +123,17 @@ test &lt;-<span class="st"> </span>data[-trainIndex,]
 <li>linear methods might be a good approach to the prediction problem, as the plots show the possibility of a linear separation between dark and light classes.</li>
 </ul>
 <h1 id="evaluation">Evaluation</h1>
+<p>We will use the train portion of the dataset to evaluate and compare various models. Since luminance classes are balanced, we will use accuracy as the main evaluation metric. A result for a single model is an array of 10 accuracy values obtained by a 10-fold cross validation on the train set. In the first version we will compare the models using a mean of those values.</p>
+<p>Function <em>evaluate</em> takes a model function and returns a vector of 10 accuracies obtained during a 10-fold cross validation. A <em>model function</em> should take two parameters: a training and a testing set, and after learning the model using the training set it should output the predicted values for the testing set. In this setting, it will be executed 10 times by the <em>evaluate</em> function with the arguments equal to 9/10 and the remaining 1/10 of the train set, respectively.</p>
+<p>Example execution (this random model function ignores the training set):</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">1645789</span>)
+modelRandom &lt;-<span class="st"> </span>function(training, testing) {
+    <span class="kw">set.seed</span>(<span class="dv">1645789</span>)
+    <span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">&quot;D&quot;</span>, <span class="st">&quot;L&quot;</span>), <span class="kw">nrow</span>(testing), <span class="dt">replace =</span> <span class="ot">TRUE</span>)
+}
+<span class="kw">evaluate</span>(train, modelRandom)</code></pre>
+<pre><code>##  [1] 0.4000000 0.5238095 0.3333333 0.6500000 0.4500000 0.5000000 0.5000000
+##  [8] 0.5000000 0.5500000 0.4500000</code></pre>
 <h1 id="prediction-models">Prediction models</h1>
 <h1 id="conclusions">Conclusions</h1>
 

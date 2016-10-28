@@ -160,6 +160,24 @@ The initial analysis results in the following conclusions:
 Evaluation
 ==========
 
+We will use the train portion of the dataset to evaluate and compare various models. Since luminance classes are balanced, we will use accuracy as the main evaluation metric. A result for a single model is an array of 10 accuracy values obtained by a 10-fold cross validation on the train set. In the first version we will compare the models using a mean of those values.
+
+Function *evaluate* takes a model function and returns a vector of 10 accuracies obtained during a 10-fold cross validation. A *model function* should take two parameters: a training and a testing set, and after learning the model using the training set it should output the predicted values for the testing set. In this setting, it will be executed 10 times by the *evaluate* function with the arguments equal to 9/10 and the remaining 1/10 of the train set, respectively.
+
+Example execution (this random model function ignores the training set):
+
+``` r
+set.seed(1645789)
+modelRandom <- function(training, testing) {
+    set.seed(1645789)
+    sample(c("D", "L"), nrow(testing), replace = TRUE)
+}
+evaluate(train, modelRandom)
+```
+
+    ##  [1] 0.4000000 0.5238095 0.3333333 0.6500000 0.4500000 0.5000000 0.5000000
+    ##  [8] 0.5000000 0.5500000 0.4500000
+
 Prediction models
 =================
 
