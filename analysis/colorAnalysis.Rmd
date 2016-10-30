@@ -285,19 +285,20 @@ train <- extractFeatures(train)
 evaluateFeatures(train)
 ```
 
-Let's now evaluate all models again, this time with the full feature set:
+Let's now evaluate all models again, this time with the full feature set. We will use feature scaling as well,
+since some of the new features are no longer between 0 and 1.
 
 ```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
-modelLogitResult <- evaluate(train, modelLogit)
-modelLDAResult <- evaluate(train, modelLDA)
-modelQDAResult <- evaluate(train, modelQDA)
-modelNBResult <- evaluate(train, modelNB)
-modelTreeResult <- evaluate(train, modelTree)
-modelRFResult <- evaluate(train, modelRF)
-modelSVMLinearResult <- evaluate(train, modelSVMLinear)
-modelSVMRadialResult <- evaluate(train, modelSVMRadial)
-modelSVMPolyResult <- evaluate(train, modelSVMPoly)
-modelKNNResult <- evaluate(train, modelKNN)
+modelLogitResult <- evaluate(train, modelLogit, TRUE)
+modelLDAResult <- evaluate(train, modelLDA, TRUE)
+modelQDAResult <- evaluate(train, modelQDA, TRUE)
+modelNBResult <- evaluate(train, modelNB, TRUE)
+modelTreeResult <- evaluate(train, modelTree, TRUE)
+modelRFResult <- evaluate(train, modelRF, TRUE)
+modelSVMLinearResult <- evaluate(train, modelSVMLinear, TRUE)
+modelSVMRadialResult <- evaluate(train, modelSVMRadial, TRUE)
+modelSVMPolyResult <- evaluate(train, modelSVMPoly, TRUE)
+modelKNNResult <- evaluate(train, modelKNN, TRUE)
 results <- list(
     "Logistic regression" = modelLogitResult,
     "LDA"                 = modelLDAResult,

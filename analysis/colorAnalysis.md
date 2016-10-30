@@ -305,21 +305,21 @@ evaluateFeatures(train)
     ## 18           SqBlue 3.156888e-01
     ## 19       SqRootBlue 3.156888e-01
 
-Let's now evaluate all models again, this time with the full feature set:
+Let's now evaluate all models again, this time with the full feature set. We will use feature scaling as well, since some of the new features are no longer between 0 and 1.
 
 ![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
     ##                 Method      Mean         SD       Min      Max StatWins
-    ## 1           SVM radial 0.9500000 0.04082483 0.9000000 1.000000        4
-    ## 2           SVM linear 0.9357143 0.04604543 0.8571429 1.000000        4
-    ## 3             SVM poly 0.9352381 0.03387318 0.9000000 1.000000        3
-    ## 4                  LDA 0.9214286 0.06431021 0.7619048 1.000000        2
-    ## 5        Random forest 0.9211905 0.06140878 0.8095238 1.000000        1
-    ## 6  Logistic regression 0.9052381 0.07262490 0.8000000 1.000000        1
-    ## 7                  QDA 0.8909524 0.06443545 0.8095238 1.000000        1
-    ## 8          Naive Bayes 0.8861905 0.06844565 0.7619048 1.000000        1
-    ## 9        Decision tree 0.8811905 0.07062556 0.8000000 0.952381        1
-    ## 10                 KNN 0.7819048 0.07183482 0.7000000 0.900000        0
+    ## 1           SVM radial 0.9500000 0.04082483 0.9000000 1.000000        3
+    ## 2           SVM linear 0.9357143 0.04604543 0.8571429 1.000000        3
+    ## 3             SVM poly 0.9352381 0.03387318 0.9000000 1.000000        2
+    ## 4                  LDA 0.9214286 0.06431021 0.7619048 1.000000        1
+    ## 5        Random forest 0.9211905 0.06140878 0.8095238 1.000000        0
+    ## 6                  KNN 0.9166667 0.06352182 0.7619048 1.000000        0
+    ## 7  Logistic regression 0.9052381 0.07262490 0.8000000 1.000000        0
+    ## 8                  QDA 0.8909524 0.06443545 0.8095238 1.000000        0
+    ## 9          Naive Bayes 0.8811905 0.07305425 0.7619048 1.000000        0
+    ## 10       Decision tree 0.8811905 0.07062556 0.8000000 0.952381        0
 
 Conclusions
 ===========

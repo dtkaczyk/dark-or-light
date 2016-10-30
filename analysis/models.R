@@ -22,58 +22,58 @@ modelStandardLuma <- function(training, testing) {
 
 # Linear models
 
-modelLogit <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "glm", family = "binomial")
+trainAndPredict <- function(training, testing, method, scale = FALSE, ...) {
+    if (scale) {
+        preProcValues <- preProcess(training, method = c("center", "scale"))
+        training <- predict(preProcValues, training)
+        testing <- predict(preProcValues, testing)
+    }
+    model <- train(Lum ~ ., data = training, method = method, ...)
     predict(model, testing)
 }
 
-modelLDA <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "lda")
-    predict(model, testing)
+modelLogit <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "glm", scale, family = "binomial")
 }
 
-modelQDA <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "qda")
-    predict(model, testing)
+modelLDA <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "lda", scale)
 }
 
-modelNB <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "nb")
-    predict(model, testing)
+modelQDA <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "qda", scale)
+}
+
+modelNB <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "nb", scale)
 }
 
 # Tree-based
 
-modelTree <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "rpart")
-    predict(model, testing)
+modelTree <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "rpart", scale)
 }
 
-modelRF <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "rf")
-    predict(model, testing)
+modelRF <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "rf", scale)
 }
 
 # SVM
 
-modelSVMLinear <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "svmLinear2")
-    predict(model, testing)
+modelSVMLinear <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "svmLinear2", scale)
 }
 
-modelSVMRadial <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "svmRadial")
-    predict(model, testing)
+modelSVMRadial <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "svmRadial", scale)
 }
 
-modelSVMPoly <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "svmPoly")
-    predict(model, testing)
+modelSVMPoly <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "svmPoly", scale)
 }
 
 # Other
 
-modelKNN <- function(training, testing) {
-    model <- train(Lum ~ ., data = training, method = "knn")
-    predict(model, testing)
+modelKNN <- function(training, testing, scale = FALSE) {
+    trainAndPredict(training, testing, "knn", scale)
 }
