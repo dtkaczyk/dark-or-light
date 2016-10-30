@@ -183,13 +183,6 @@ cvSummary(evaluate(train, modelRandom))
 Prediction models
 =================
 
-We will evaluate and compare the following classes of algorithms:
-
--   simple baseline algorithms, which do not require model learning
--   linear models: logistic regression, ...
--   tree-based models: CART, random forest, ...
--   ...
-
 Baseline models
 ---------------
 
@@ -247,6 +240,54 @@ visualizeResults(list(
 ![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 We can clearly see that standard luma equation gives very good results and outperforms other baseline methods.
+
+Learning models
+---------------
+
+Now let's fit a few models to the dataset and see how they perform. We are using *caret* package which by default performs a grid search in order to find the best parameters for a model. We will try the following learning methods:
+
+-   Logistic Regression
+-   Linear Discriminant Analysis and Quadratic Discriminant Analysis
+-   Naive Bayes
+-   Decision Tees and Random Forest
+-   Support Vector Machines with linear, polynomial and radial kernel
+-   K-Nearest Neighbors
+
+<!-- -->
+
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+    ## 
+    ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+
+![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-16-1.png)
+
+    ##                 Method      Mean         SD       Min      Max
+    ## 1           SVM radial 0.9552381 0.04375601 0.9000000 1.000000
+    ## 2                  QDA 0.9457143 0.05863141 0.8500000 1.000000
+    ## 3             SVM poly 0.9457143 0.05368506 0.8571429 1.000000
+    ## 4                  KNN 0.9409524 0.03840483 0.9000000 1.000000
+    ## 5           SVM linear 0.9352381 0.05304770 0.8500000 1.000000
+    ## 6        Random forest 0.9311905 0.05737881 0.8500000 1.000000
+    ## 7                  LDA 0.9304762 0.03453612 0.9000000 1.000000
+    ## 8  Logistic regression 0.9257143 0.04740428 0.8571429 1.000000
+    ## 9          Naive Bayes 0.8959524 0.05468767 0.8000000 0.952381
+    ## 10       Decision tree 0.8409524 0.08479668 0.6500000 0.952381
 
 Conclusions
 ===========

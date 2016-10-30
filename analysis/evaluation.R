@@ -1,3 +1,5 @@
+library(ggplot2)
+
 evaluate <- function(data, modelFunction) {
     set.seed(2434)
     dataRand <- data[sample(nrow(data)),]
@@ -17,7 +19,21 @@ cvSummary <- function(results) {
     list(mean = mean(results), sd = sd(results))
 }
 
+summarizeResults <- function(resultList) {
+    summaryDF <- data.frame(
+        Method = names(resultList),
+        Mean   = sapply(resultList, mean),
+        SD     = sapply(resultList, sd),
+        Min    = sapply(resultList, min),
+        Max    = sapply(resultList, max)
+    )
+    summaryDF <- summaryDF[order(-summaryDF$Mean),]
+    row.names(summaryDF) <- NULL
+    summaryDF
+}
+
 visualizeResults <- function(resultList) {
-    modelsResults <- data.frame(Accuracy = unlist(resultList), Model = unlist(lapply(names(resultList), rep, 10)))
+    resultNames <- sapply(names(resultList), function(x) {gsub(" ", "\n", x)})
+    modelsResults <- data.frame(Accuracy = unlist(resultList), Model = unlist(lapply(resultNames, rep, 10)))
     ggplot(modelsResults, aes(x = Model, y = Accuracy, fill = Model)) + geom_boxplot() + guides(fill = FALSE)
 }

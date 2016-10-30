@@ -1,3 +1,5 @@
+library(caret)
+
 # Baseline models
 
 modelAlwaysLight <- function(training, testing) {
@@ -16,4 +18,62 @@ modelStandardLuma <- function(training, testing) {
     prediction <- rep("L", nrow(testing))
     prediction[l] <- "D"
     prediction
+}
+
+# Linear models
+
+modelLogit <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "glm", family = "binomial")
+    predict(model, testing)
+}
+
+modelLDA <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "lda")
+    predict(model, testing)
+}
+
+modelQDA <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "qda")
+    predict(model, testing)
+}
+
+modelNB <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "nb")
+    predict(model, testing)
+}
+
+# Tree-based
+
+modelTree <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "rpart")
+    predict(model, testing)
+}
+
+modelRF <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "rf")
+    predict(model, testing)
+}
+
+# SVM
+
+modelSVMLinear <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "svmLinear2")
+    predict(model, testing)
+}
+
+modelSVMRadial <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "svmRadial")
+    predict(model, testing)
+}
+
+modelSVMPoly <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "svmPoly")
+    predict(model, testing)
+}
+
+# Other
+
+modelKNN <- function(training, testing) {
+    model <- train(Lum ~ Red + Green + Blue, data = training, method = "knn")
+    predict(model, testing)
 }

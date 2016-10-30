@@ -7,7 +7,6 @@ output: github_document
 
 ```{r, echo=FALSE, warning=FALSE,error=FALSE,message=FALSE}
 # imports
-library(caret)
 library(gridExtra)
 
 source("testSet.R")
@@ -188,13 +187,6 @@ cvSummary(evaluate(train, modelRandom))
 
 # Prediction models
 
-We will evaluate and compare the following classes of algorithms:
-
-  * simple baseline algorithms, which do not require model learning
-  * linear models: logistic regression, ...
-  * tree-based models: CART, random forest, ...
-  * ...
-
 ## Baseline models
 
 Let's start with a few simple baseline models, which do not require any training at all.
@@ -233,6 +225,46 @@ visualizeResults(list(
 ```
 
 We can clearly see that standard luma equation gives very good results and outperforms other baseline methods.
+
+## Learning models
+
+Now let's fit a few models to the dataset and see how they perform. We are using *caret* package which by default
+performs a grid search in order to find the best parameters for a model. We will try the following learning 
+methods:
+
+  * Logistic Regression
+  * Linear Discriminant Analysis and Quadratic Discriminant Analysis
+  * Naive Bayes
+  * Decision Tees and Random Forest
+  * Support Vector Machines with linear, polynomial and radial kernel
+  * K-Nearest Neighbors
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
+modelLogitResult <- evaluate(train, modelLogit)
+modelLDAResult <- evaluate(train, modelLDA)
+modelQDAResult <- evaluate(train, modelQDA)
+modelNBResult <- evaluate(train, modelNB)
+modelTreeResult <- evaluate(train, modelTree)
+modelRFResult <- evaluate(train, modelRF)
+modelSVMLinearResult <- evaluate(train, modelSVMLinear)
+modelSVMRadialResult <- evaluate(train, modelSVMRadial)
+modelSVMPolyResult <- evaluate(train, modelSVMPoly)
+modelKNNResult <- evaluate(train, modelKNN)
+results <- list(
+    "Logistic regression" = modelLogitResult,
+    "LDA"                 = modelLDAResult,
+    "QDA"                 = modelQDAResult,
+    "Naive Bayes"         = modelNBResult,
+    "Decision tree"       = modelTreeResult,
+    "Random forest"       = modelRFResult,
+    "KNN"                 = modelKNNResult,
+    "SVM linear"          = modelSVMLinearResult,
+    "SVM radial"          = modelSVMRadialResult,
+    "SVM poly"            = modelSVMPolyResult
+)
+visualizeResults(results)
+summarizeResults(results)
+```
 
 # Conclusions
 
