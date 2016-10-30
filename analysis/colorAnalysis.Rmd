@@ -189,39 +189,37 @@ cvSummary(evaluate(train, modelRandom))
 
 ## Baseline models
 
-Let's start with a few simple baseline models, which do not require any training at all.
+Let's start with a few simple baseline models, which do not require any training at all. We will use the following
+models:
 
-**modelAlwaysLight** predicts *light* for all data points:
+  * **modelAlwaysLight** predicts *light* for all data points,
+  * **modelHalfSum** predicts *light* when average color components intensity is greater than or equal 0.5, that
+  is when $c_R + c_G + c_B \geq 1.5$
+  * **modelStandardLuma** uses the standard luma definition for digital formats (see 
+  https://en.wikipedia.org/wiki/Luma_%28video%29)
 
 ```{r}
 modelAlwaysLightResult <- evaluate(train, modelAlwaysLight)
-cvSummary(modelAlwaysLightResult)
-```
-
-**modelHalfSum** predicts *light* when average color components intensity is greater than or equal 0.5, that is
-when $c_R + c_G + c_B \geq 1.5$:
-
-```{r}
 modelHalfSumResult <- evaluate(train, modelHalfSum)
-cvSummary(modelHalfSumResult)
-```
-
-**modelStandardLuma** uses the standard luma definition for digital formats (see 
-https://en.wikipedia.org/wiki/Luma_%28video%29):
-
-```{r}
 modelStandardLumaResult <- evaluate(train, modelStandardLuma)
-cvSummary(modelStandardLumaResult)
 ```
 
-Let's also compare out baseline models visually:
+Let's also compare out baseline models visually by plotting box plots of the distributions of the accuracies 
+obtained by each model during cross validation:
 
 ```{r}
-visualizeResults(list(
+results <- list(
     "Always light"  = modelAlwaysLightResult,
     "Half sum"      = modelHalfSumResult,
     "Standard luma" = modelStandardLumaResult
-))
+)
+visualizeResults(results)
+```
+
+Tha table summarizes baseline models' results:
+
+```{r}
+summarizeResults(results)
 ```
 
 We can clearly see that standard luma equation gives very good results and outperforms other baseline methods.

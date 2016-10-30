@@ -186,58 +186,41 @@ Prediction models
 Baseline models
 ---------------
 
-Let's start with a few simple baseline models, which do not require any training at all.
+Let's start with a few simple baseline models, which do not require any training at all. We will use the following models:
 
-**modelAlwaysLight** predicts *light* for all data points:
+-   **modelAlwaysLight** predicts *light* for all data points,
+-   **modelHalfSum** predicts *light* when average color components intensity is greater than or equal 0.5, that is when \(c_R + c_G + c_B \geq 1.5\)
+-   **modelStandardLuma** uses the standard luma definition for digital formats (see <https://en.wikipedia.org/wiki/Luma_%28video%29>)
 
 ``` r
 modelAlwaysLightResult <- evaluate(train, modelAlwaysLight)
-cvSummary(modelAlwaysLightResult)
-```
-
-    ## $mean
-    ## [1] 0.5247619
-    ## 
-    ## $sd
-    ## [1] 0.1051652
-
-**modelHalfSum** predicts *light* when average color components intensity is greater than or equal 0.5, that is when \(c_R + c_G + c_B \geq 1.5\):
-
-``` r
 modelHalfSumResult <- evaluate(train, modelHalfSum)
-cvSummary(modelHalfSumResult)
-```
-
-    ## $mean
-    ## [1] 0.7930952
-    ## 
-    ## $sd
-    ## [1] 0.1006745
-
-**modelStandardLuma** uses the standard luma definition for digital formats (see <https://en.wikipedia.org/wiki/Luma_%28video%29>):
-
-``` r
 modelStandardLumaResult <- evaluate(train, modelStandardLuma)
-cvSummary(modelStandardLumaResult)
 ```
 
-    ## $mean
-    ## [1] 0.9157143
-    ## 
-    ## $sd
-    ## [1] 0.04748924
-
-Let's also compare out baseline models visually:
+Let's also compare out baseline models visually by plotting box plots of the distributions of the accuracies obtained by each model during cross validation:
 
 ``` r
-visualizeResults(list(
+results <- list(
     "Always light"  = modelAlwaysLightResult,
     "Half sum"      = modelHalfSumResult,
     "Standard luma" = modelStandardLumaResult
-))
+)
+visualizeResults(results)
 ```
 
-![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+Tha table summarizes baseline models' results:
+
+``` r
+summarizeResults(results)
+```
+
+    ##          Method      Mean         SD       Min Max
+    ## 1 Standard luma 0.9157143 0.04748924 0.8500000 1.0
+    ## 2      Half sum 0.7930952 0.10067453 0.6190476 0.9
+    ## 3  Always light 0.5247619 0.10516517 0.3500000 0.7
 
 We can clearly see that standard luma equation gives very good results and outperforms other baseline methods.
 
@@ -275,7 +258,7 @@ Now let's fit a few models to the dataset and see how they perform. We are using
     ## 
     ## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
 
-![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
     ##                 Method      Mean         SD       Min      Max
     ## 1           SVM radial 0.9552381 0.04375601 0.9000000 1.000000
