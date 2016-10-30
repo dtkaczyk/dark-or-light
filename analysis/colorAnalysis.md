@@ -211,16 +211,12 @@ visualizeResults(results)
 
 ![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
-Tha table summarizes baseline models' results:
+The following table summarizes baseline models' results. To compare the models more formally, we use statistical tests to find out whether the differences between the results obtained in the cross validation are statistically significant. Wilcoxon signed-rank test is used to compare the results and the models are ordered by the number of statistical wins:
 
-``` r
-summarizeResults(results)
-```
-
-    ##          Method      Mean         SD       Min Max
-    ## 1 Standard luma 0.9157143 0.04748924 0.8500000 1.0
-    ## 2      Half sum 0.7930952 0.10067453 0.6190476 0.9
-    ## 3  Always light 0.5247619 0.10516517 0.3500000 0.7
+    ##          Method      Mean         SD       Min Max StatWins
+    ## 1 Standard luma 0.9157143 0.04748924 0.8500000 1.0        2
+    ## 2      Half sum 0.7930952 0.10067453 0.6190476 0.9        1
+    ## 3  Always light 0.5247619 0.10516517 0.3500000 0.7        0
 
 We can clearly see that standard luma equation gives very good results and outperforms other baseline methods.
 
@@ -260,17 +256,17 @@ Now let's fit a few models to the dataset and see how they perform. We are using
 
 ![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
-    ##                 Method      Mean         SD       Min      Max
-    ## 1           SVM radial 0.9552381 0.04375601 0.9000000 1.000000
-    ## 2                  QDA 0.9457143 0.05863141 0.8500000 1.000000
-    ## 3             SVM poly 0.9457143 0.05368506 0.8571429 1.000000
-    ## 4                  KNN 0.9409524 0.03840483 0.9000000 1.000000
-    ## 5           SVM linear 0.9352381 0.05304770 0.8500000 1.000000
-    ## 6        Random forest 0.9311905 0.05737881 0.8500000 1.000000
-    ## 7                  LDA 0.9304762 0.03453612 0.9000000 1.000000
-    ## 8  Logistic regression 0.9257143 0.04740428 0.8571429 1.000000
-    ## 9          Naive Bayes 0.8959524 0.05468767 0.8000000 0.952381
-    ## 10       Decision tree 0.8409524 0.08479668 0.6500000 0.952381
+    ##                 Method      Mean         SD       Min      Max StatWins
+    ## 1           SVM radial 0.9552381 0.04375601 0.9000000 1.000000        2
+    ## 2             SVM poly 0.9457143 0.05368506 0.8571429 1.000000        2
+    ## 3                  QDA 0.9457143 0.05863141 0.8500000 1.000000        1
+    ## 4                  KNN 0.9409524 0.03840483 0.9000000 1.000000        1
+    ## 5           SVM linear 0.9352381 0.05304770 0.8500000 1.000000        1
+    ## 6        Random forest 0.9311905 0.05737881 0.8500000 1.000000        1
+    ## 7                  LDA 0.9304762 0.03453612 0.9000000 1.000000        1
+    ## 8  Logistic regression 0.9257143 0.04740428 0.8571429 1.000000        1
+    ## 9          Naive Bayes 0.8959524 0.05468767 0.8000000 0.952381        0
+    ## 10       Decision tree 0.8409524 0.08479668 0.6500000 0.952381        0
 
 Conclusions
 ===========

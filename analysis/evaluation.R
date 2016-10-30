@@ -25,9 +25,24 @@ summarizeResults <- function(resultList) {
         Mean   = sapply(resultList, mean),
         SD     = sapply(resultList, sd),
         Min    = sapply(resultList, min),
-        Max    = sapply(resultList, max)
+        Max    = sapply(resultList, max),
+        StatWins = 0
     )
-    summaryDF <- summaryDF[order(-summaryDF$Mean),]
+    for (i in names(resultList)) {
+        x <- resultList[[i]]
+        wins <- 0
+        for (j in names(resultList)) {
+            y <- resultList[[j]]
+            if (i != j && mean(x) > mean(y)) {
+                pv <- wilcox.test(x, y, paired = TRUE)$p.value
+                if (pv < 0.05) {
+                    wins <- wins + 1
+                }
+            }
+        }
+        summaryDF[summaryDF$Method == i,]$StatWins <- wins
+    }
+    summaryDF <- summaryDF[order(-summaryDF$StatWins, -summaryDF$Mean),]
     row.names(summaryDF) <- NULL
     summaryDF
 }

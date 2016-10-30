@@ -216,9 +216,12 @@ results <- list(
 visualizeResults(results)
 ```
 
-Tha table summarizes baseline models' results:
+The following table summarizes baseline models' results. To compare the models more formally, we use statistical
+tests to find out whether the differences between the results obtained in the cross validation are statistically
+significant. Wilcoxon signed-rank test is used to compare the results and the models are ordered by the number of
+statistical wins:
 
-```{r}
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
 summarizeResults(results)
 ```
 
