@@ -268,5 +268,58 @@ Now let's fit a few models to the dataset and see how they perform. We are using
     ## 9          Naive Bayes 0.8959524 0.05468767 0.8000000 0.952381        0
     ## 10       Decision tree 0.8409524 0.08479668 0.6500000 0.952381        0
 
+### Additional features
+
+We will also try to add new features to the dataset:
+
+-   the squares of all RGB components: *SqRed*, *SqGreen*, *SqBlue*
+-   the square roots of all RGB components: *SqRootRed*, *SqRootGreen*, *SqRootBlue*
+-   multiplications of the components: *MultRedGreen*, *MultGreenBlue*, *MultRedBlue*, *MultRedGreenBlue*
+-   ratios of the components: *RatioRedGreen*, *RatioGreenRed*, *RatioedBlue*, *RatioBlueRed*, *RatioBlueGreen*, *RatioGreenBlue*
+
+Similarly as before, we will use Kolmogorov–Smirnov test to assess and compare the quality of all the features:
+
+``` r
+train <- extractFeatures(train)
+evaluateFeatures(train)
+```
+
+    ##             Feature       PValue
+    ## 1      MultRedGreen 0.000000e+00
+    ## 2             Green 1.110223e-16
+    ## 3           SqGreen 1.110223e-16
+    ## 4       SqRootGreen 1.110223e-16
+    ## 5  MultRedGreenBlue 9.015011e-14
+    ## 6     MultGreenBlue 2.916922e-11
+    ## 7    RatioBlueGreen 2.459155e-09
+    ## 8    RatioGreenBlue 2.459155e-09
+    ## 9               Red 4.632881e-05
+    ## 10            SqRed 4.632881e-05
+    ## 11        SqRootRed 4.632881e-05
+    ## 12    RatioRedGreen 2.106953e-04
+    ## 13    RatioGreenRed 2.106953e-04
+    ## 14      MultRedBlue 4.065324e-03
+    ## 15     RatioBlueRed 1.682655e-02
+    ## 16     RatioRedBlue 1.682655e-02
+    ## 17             Blue 3.156888e-01
+    ## 18           SqBlue 3.156888e-01
+    ## 19       SqRootBlue 3.156888e-01
+
+Let's now evaluate all models again, this time with the full feature set:
+
+![](colorAnalysis_files/figure-markdown_github/unnamed-chunk-17-1.png)
+
+    ##                 Method      Mean         SD       Min      Max StatWins
+    ## 1           SVM radial 0.9500000 0.04082483 0.9000000 1.000000        4
+    ## 2           SVM linear 0.9357143 0.04604543 0.8571429 1.000000        4
+    ## 3             SVM poly 0.9352381 0.03387318 0.9000000 1.000000        3
+    ## 4                  LDA 0.9214286 0.06431021 0.7619048 1.000000        2
+    ## 5        Random forest 0.9211905 0.06140878 0.8095238 1.000000        1
+    ## 6  Logistic regression 0.9052381 0.07262490 0.8000000 1.000000        1
+    ## 7                  QDA 0.8909524 0.06443545 0.8095238 1.000000        1
+    ## 8          Naive Bayes 0.8861905 0.06844565 0.7619048 1.000000        1
+    ## 9        Decision tree 0.8811905 0.07062556 0.8000000 0.952381        1
+    ## 10                 KNN 0.7819048 0.07183482 0.7000000 0.900000        0
+
 Conclusions
 ===========

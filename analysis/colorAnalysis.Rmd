@@ -12,6 +12,7 @@ library(gridExtra)
 source("testSet.R")
 source("evaluation.R")
 source("models.R")
+source("features.R")
 ```
 
 # Introduction
@@ -239,6 +240,52 @@ methods:
   * Decision Tees and Random Forest
   * Support Vector Machines with linear, polynomial and radial kernel
   * K-Nearest Neighbors
+
+```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
+modelLogitResult <- evaluate(train, modelLogit)
+modelLDAResult <- evaluate(train, modelLDA)
+modelQDAResult <- evaluate(train, modelQDA)
+modelNBResult <- evaluate(train, modelNB)
+modelTreeResult <- evaluate(train, modelTree)
+modelRFResult <- evaluate(train, modelRF)
+modelSVMLinearResult <- evaluate(train, modelSVMLinear)
+modelSVMRadialResult <- evaluate(train, modelSVMRadial)
+modelSVMPolyResult <- evaluate(train, modelSVMPoly)
+modelKNNResult <- evaluate(train, modelKNN)
+results <- list(
+    "Logistic regression" = modelLogitResult,
+    "LDA"                 = modelLDAResult,
+    "QDA"                 = modelQDAResult,
+    "Naive Bayes"         = modelNBResult,
+    "Decision tree"       = modelTreeResult,
+    "Random forest"       = modelRFResult,
+    "KNN"                 = modelKNNResult,
+    "SVM linear"          = modelSVMLinearResult,
+    "SVM radial"          = modelSVMRadialResult,
+    "SVM poly"            = modelSVMPolyResult
+)
+visualizeResults(results)
+summarizeResults(results)
+```
+
+### Additional features
+
+We will also try to add new features to the dataset:
+
+  * the squares of all RGB components: *SqRed*, *SqGreen*, *SqBlue*
+  * the square roots of all RGB components: *SqRootRed*, *SqRootGreen*, *SqRootBlue*
+  * multiplications of the components: *MultRedGreen*, *MultGreenBlue*, *MultRedBlue*, *MultRedGreenBlue*
+  * ratios of the components: *RatioRedGreen*, *RatioGreenRed*, *RatioedBlue*, *RatioBlueRed*, *RatioBlueGreen*,
+  *RatioGreenBlue*
+
+Similarly as before, we will use Kolmogorov–Smirnov test to assess and compare the quality of all the features:
+
+```{r}
+train <- extractFeatures(train)
+evaluateFeatures(train)
+```
+
+Let's now evaluate all models again, this time with the full feature set:
 
 ```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
 modelLogitResult <- evaluate(train, modelLogit)
