@@ -1,0 +1,10 @@
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
