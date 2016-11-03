@@ -1,3 +1,9 @@
+basicFeatures <- c("Red", "Green", "Blue")
+multFeatures <- c("MultRedGreen", "MultGreenBlue", "MultRedBlue", "MultRedGreenBlue")
+ratioFeatures <- c("RatioRedGreen", "RatioGreenRed", "RatioRedBlue", "RatioBlueRed",
+                   "RatioBlueGreen", "RatioGreenBlue", "RatioRedGreenBlue")
+sqFeatures <- c("SqRed", "SqGreen", "SqBlue", "SqRootRed", "SqRootGreen", "SqRootBlue")
+
 extractFeatures <- function(data) {
     data$SqRed <- data$Red^2
     data$SqGreen <- data$Green^2
@@ -15,6 +21,7 @@ extractFeatures <- function(data) {
     data$RatioBlueRed <- data$Blue / data$Red
     data$RatioBlueGreen <- data$Blue / data$Green
     data$RatioGreenBlue <- data$Green / data$Blue
+    data$RatioRedGreenBlue <- data$Red / data$Green / data$Blue
     data
 }
 

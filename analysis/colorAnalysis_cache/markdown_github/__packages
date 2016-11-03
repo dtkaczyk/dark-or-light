@@ -1,0 +1,11 @@
+base
+gridExtra
+ggplot2
+lattice
+caret
+MASS
+klaR
+rpart
+randomForest
+e1071
+kernlab

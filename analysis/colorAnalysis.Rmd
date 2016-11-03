@@ -5,8 +5,7 @@ date: "October 24, 2016"
 output: github_document
 ---
 
-```{r, echo=FALSE, warning=FALSE,error=FALSE,message=FALSE}
-# imports
+```{r imports, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 library(gridExtra)
 
 source("testSet.R")
@@ -30,7 +29,7 @@ The issue is not trivial for a couple of reasons:
   * even though there are colors for which the correct answer is obvious (eg. white or black), there are also a
   lot of colors in case of which the answer might be ambiguous (eg. pure green).
  
-## Problem statement
+## Problem Statement
 
 We will represent colors using RGB model. In this model a color $c$ is represented by a vector of three numbers 
 $c = [c_R, c_G, c_B]$, where the red, green and blue intensities are normalized, that is 
@@ -48,21 +47,21 @@ A dedicated dataset was prepared manualy for the purpose of this analysis. First
 randomly sampling from uniform distribution for each RGB components separately. Then the colors were labelled
 manually as *dark* or *light*. For manual labelling we used scatter plots of green intensity against red intensity with points coloured by the "real" color of the data point and labelled with its number from the data set:
 
-```{r, echo=FALSE}
+```{r buildingTestset, echo=FALSE}
 set.seed(2690)
 set <- createColorSet(size = 20)
 visualizeColorSet(set)
 ```
 
-# Exploratory analysis
+# Exploratory Analysis
 
 Before exploring our dataset, let's first divide it into train and test sets. All the analyses, plotting and
 exploring will be done using only train part. In the end, the test set will be used to give a fair, reliable
 estimate of the prediction's error.
 
-```{r}
+```{r readingData}
 data <- read.csv("data.csv")
-set.seed(2101)
+set.seed(2690)
 split <- 0.67
 trainIndex <- createDataPartition(data$Lum, p = split, list = FALSE)
 train <- data[trainIndex,]
@@ -74,20 +73,20 @@ row.names(test) <- NULL
 Our train set contains `r nrow(train)` observation with `r ncol(train)` attributes describing each of them. Let's 
 first see how the first few observation look like:
 
-```{r}
+```{r headTrain}
 head(train, n = 10)
 ```
 
 **Red**, **Green** and **Blue** attributes are numeric, while **Lum** is a categorical variable with two levels: 
 *L* and *D*:
 
-```{r}
+```{r strTrain}
 str(train)
 ```
 
 Let's now plot the histograms of all the variables:
 
-```{r, echo=FALSE}
+```{r histograms, echo=FALSE}
 colCompHist <- function(col) {
     ggplot(data = train, aes(train[[col]])) +
         geom_histogram(aes(y =..count../sum(..count..)), binwidth = 0.05, col = "black", fill = "white") +
@@ -109,7 +108,7 @@ in each class.
 
 Let's also examine the boxplots of each variable divided by the luminance:
 
-```{r, echo=FALSE}
+```{r boxplots, echo=FALSE}
 rbp <- ggplot(train, aes(x = Lum, y = Red, fill = Lum)) + geom_boxplot()
 gbp <- ggplot(train, aes(x = Lum, y = Green, fill = Lum)) + geom_boxplot()
 bbp <- ggplot(train, aes(x = Lum, y = Blue, fill = Lum)) + geom_boxplot()
@@ -128,7 +127,7 @@ We can also perform statistical tests to confirm these observations more formall
 Kolmogorov–Smirnov test to compare two samples: red/green/blue values for dark and light colors. The p-value will
 indicate how probable it is that the samples come from the same distibution.
 
-```{r}
+```{r statTests}
 ks.test(train[train$Lum=='D',]$Red, train[train$Lum=='L',]$Red)
 ks.test(train[train$Lum=='D',]$Green, train[train$Lum=='L',]$Green)
 ks.test(train[train$Lum=='D',]$Blue, train[train$Lum=='L',]$Blue)
@@ -140,7 +139,7 @@ indeed vary a lot.
 
 Let's also examine the correlations between the variables:
 
-```{r}
+```{r correlations}
 cor(train[,1:3])
 ```
 
@@ -149,7 +148,7 @@ be expected considering how the data set was built.
 
 Let's also plot variables against each other and color the points with luminance:
 
-```{r}
+```{r pairs}
 pairs(train, col=train$Lum)
 ```
 
@@ -178,17 +177,17 @@ train set, respectively.
 
 Example execution (this random model function ignores the training set):
 
-```{r}
+```{r modelRandom}
 modelRandom <- function(training, testing) {
-    set.seed(1645789)
+    set.seed(2690)
     sample(c("D", "L"), nrow(testing), replace = TRUE)
 }
 cvSummary(evaluate(train, modelRandom))
 ```
 
-# Prediction models
+# Prediction Models
 
-## Baseline models
+## Baseline Models
 
 Let's start with a few simple baseline models, which do not require any training at all. We will use the following
 models:
@@ -199,7 +198,7 @@ models:
   * **modelStandardLuma** uses the standard luma definition for digital formats (see 
   https://en.wikipedia.org/wiki/Luma_%28video%29)
 
-```{r}
+```{r baselineModels}
 modelAlwaysLightResult <- evaluate(train, modelAlwaysLight)
 modelHalfSumResult <- evaluate(train, modelHalfSum)
 modelStandardLumaResult <- evaluate(train, modelStandardLuma)
@@ -208,7 +207,7 @@ modelStandardLumaResult <- evaluate(train, modelStandardLuma)
 Let's also compare out baseline models visually by plotting box plots of the distributions of the accuracies 
 obtained by each model during cross validation:
 
-```{r}
+```{r baselineVis}
 results <- list(
     "Always light"  = modelAlwaysLightResult,
     "Half sum"      = modelHalfSumResult,
@@ -222,13 +221,13 @@ tests to find out whether the differences between the results obtained in the cr
 significant. Wilcoxon signed-rank test is used to compare the results and the models are ordered by the number of
 statistical wins:
 
-```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
+```{r baselineSummary, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 summarizeResults(results)
 ```
 
 We can clearly see that standard luma equation gives very good results and outperforms other baseline methods.
 
-## Learning models
+## Learning Models
 
 Now let's fit a few models to the dataset and see how they perform. We are using *caret* package which by default
 performs a grid search in order to find the best parameters for a model. We will try the following learning 
@@ -241,79 +240,250 @@ methods:
   * Support Vector Machines with linear, polynomial and radial kernel
   * K-Nearest Neighbors
 
-```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
-modelLogitResult <- evaluate(train, modelLogit)
-modelLDAResult <- evaluate(train, modelLDA)
-modelQDAResult <- evaluate(train, modelQDA)
-modelNBResult <- evaluate(train, modelNB)
-modelTreeResult <- evaluate(train, modelTree)
-modelRFResult <- evaluate(train, modelRF)
-modelSVMLinearResult <- evaluate(train, modelSVMLinear)
-modelSVMRadialResult <- evaluate(train, modelSVMRadial)
-modelSVMPolyResult <- evaluate(train, modelSVMPoly)
-modelKNNResult <- evaluate(train, modelKNN)
-results <- list(
-    "Logistic regression" = modelLogitResult,
-    "LDA"                 = modelLDAResult,
-    "QDA"                 = modelQDAResult,
-    "Naive Bayes"         = modelNBResult,
-    "Decision tree"       = modelTreeResult,
-    "Random forest"       = modelRFResult,
-    "KNN"                 = modelKNNResult,
-    "SVM linear"          = modelSVMLinearResult,
-    "SVM radial"          = modelSVMRadialResult,
-    "SVM poly"            = modelSVMPolyResult
-)
-visualizeResults(results)
-summarizeResults(results)
-```
-
-### Additional features
-
-We will also try to add new features to the dataset:
+We will also enhance our dataset with new features:
 
   * the squares of all RGB components: *SqRed*, *SqGreen*, *SqBlue*
   * the square roots of all RGB components: *SqRootRed*, *SqRootGreen*, *SqRootBlue*
   * multiplications of the components: *MultRedGreen*, *MultGreenBlue*, *MultRedBlue*, *MultRedGreenBlue*
   * ratios of the components: *RatioRedGreen*, *RatioGreenRed*, *RatioedBlue*, *RatioBlueRed*, *RatioBlueGreen*,
-  *RatioGreenBlue*
+  *RatioGreenBlue*, *RatioRedGreenBlue*
 
-Similarly as before, we will use Kolmogorov–Smirnov test to assess and compare the quality of all the features:
+Each model starts with a different base sets of the features and performs feature selection within each fold 
+(Recursive Feature Elimination using caret-provided feature importance scores).
 
-```{r}
+### Basic Features
+
+These models use only the three basic features:
+
+```{r modelsBasic, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache = TRUE}
 train <- extractFeatures(train)
-evaluateFeatures(train)
-```
 
-Let's now evaluate all models again, this time with the full feature set. We will use feature scaling as well,
-since some of the new features are no longer between 0 and 1.
+initResultDF <- function() {
+    data.frame(basic = rep(0, 10), 
+               mult  = rep(0, 10),
+               ratio = rep(0, 10),
+               sq    = rep(0, 10))
+}
+modelLogitResult     <- initResultDF()
+modelLDAResult       <- initResultDF()
+modelQDAResult       <- initResultDF()
+modelNBResult        <- initResultDF()
+modelTreeResult      <- initResultDF()
+modelRFResult        <- initResultDF()
+modelSVMLinearResult <- initResultDF()
+modelSVMRadialResult <- initResultDF()
+modelSVMPolyResult   <- initResultDF()
+modelKNNResult       <- initResultDF()
 
-```{r,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE}
-modelLogitResult <- evaluate(train, modelLogit, TRUE)
-modelLDAResult <- evaluate(train, modelLDA, TRUE)
-modelQDAResult <- evaluate(train, modelQDA, TRUE)
-modelNBResult <- evaluate(train, modelNB, TRUE)
-modelTreeResult <- evaluate(train, modelTree, TRUE)
-modelRFResult <- evaluate(train, modelRF, TRUE)
-modelSVMLinearResult <- evaluate(train, modelSVMLinear, TRUE)
-modelSVMRadialResult <- evaluate(train, modelSVMRadial, TRUE)
-modelSVMPolyResult <- evaluate(train, modelSVMPoly, TRUE)
-modelKNNResult <- evaluate(train, modelKNN, TRUE)
+log <- capture.output({
+
+modelLogitResult$basic      <- evaluate(train, modelLogit,     features = basicFeatures)
+modelLDAResult$basic        <- evaluate(train, modelLDA,       features = basicFeatures)
+modelQDAResult$basic        <- evaluate(train, modelQDA,       features = basicFeatures)
+modelNBResult$basic         <- evaluate(train, modelNB,        features = basicFeatures)
+modelTreeResult$basic       <- evaluate(train, modelTree,      features = basicFeatures)
+modelRFResult$basic         <- evaluate(train, modelRF,        features = basicFeatures)
+modelSVMLinearResult$basic  <- evaluate(train, modelSVMLinear, features = basicFeatures)
+modelSVMRadialResult$basic  <- evaluate(train, modelSVMRadial, features = basicFeatures)
+modelSVMPolyResult$basic    <- evaluate(train, modelSVMPoly,   features = basicFeatures)
+modelKNNResult$basic        <- evaluate(train, modelKNN,       features = basicFeatures)
+
+})
+
 results <- list(
-    "Logistic regression" = modelLogitResult,
-    "LDA"                 = modelLDAResult,
-    "QDA"                 = modelQDAResult,
-    "Naive Bayes"         = modelNBResult,
-    "Decision tree"       = modelTreeResult,
-    "Random forest"       = modelRFResult,
-    "KNN"                 = modelKNNResult,
-    "SVM linear"          = modelSVMLinearResult,
-    "SVM radial"          = modelSVMRadialResult,
-    "SVM poly"            = modelSVMPolyResult
+    "Logistic regression" = modelLogitResult$basic,
+    "LDA"                 = modelLDAResult$basic,
+    "QDA"                 = modelQDAResult$basic,
+    "Naive Bayes"         = modelNBResult$basic,
+    "Decision tree"       = modelTreeResult$basic,
+    "Random forest"       = modelRFResult$basic,
+    "KNN"                 = modelKNNResult$basic,
+    "SVM linear"          = modelSVMLinearResult$basic,
+    "SVM radial"          = modelSVMRadialResult$basic,
+    "SVM poly"            = modelSVMPolyResult$basic
 )
 visualizeResults(results)
 summarizeResults(results)
 ```
 
-# Conclusions
+### Basic Features + Multiplication Features
 
+These models use three basic features and features based on multiplication:
+
+```{r modelsMult, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE}
+fs <- c(basicFeatures, multFeatures)
+
+log <- capture.output({
+    
+modelLogitResult$mult     <- evaluate(train, modelLogit,     features = fs)
+modelLDAResult$mult       <- evaluate(train, modelLDA,       features = fs)
+modelQDAResult$mult       <- evaluate(train, modelQDA,       features = fs)
+modelNBResult$mult        <- evaluate(train, modelNB,        features = fs)
+modelTreeResult$mult      <- evaluate(train, modelTree,      features = fs)
+modelRFResult$mult        <- evaluate(train, modelRF,        features = fs)
+modelSVMLinearResult$mult <- evaluate(train, modelSVMLinear, features = fs)
+modelSVMRadialResult$mult <- evaluate(train, modelSVMRadial, features = fs)
+modelSVMPolyResult$mult   <- evaluate(train, modelSVMPoly,   features = fs)
+modelKNNResult$mult       <- evaluate(train, modelKNN,       features = fs)
+
+})
+
+results <- list(
+    "Logistic regression" = modelLogitResult$mult,
+    "LDA"                 = modelLDAResult$mult,
+    "QDA"                 = modelQDAResult$mult,
+    "Naive Bayes"         = modelNBResult$mult,
+    "Decision tree"       = modelTreeResult$mult,
+    "Random forest"       = modelRFResult$mult,
+    "KNN"                 = modelKNNResult$mult,
+    "SVM linear"          = modelSVMLinearResult$mult,
+    "SVM radial"          = modelSVMRadialResult$mult,
+    "SVM poly"            = modelSVMPolyResult$mult
+)
+visualizeResults(results)
+summarizeResults(results)
+```
+
+### Basic Features + Multiplication Features + Ratio Features
+
+These models use three basic features, features based on multiplication and ratio-based features:
+
+```{r modelsRatio, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE}
+fs <- c(basicFeatures, multFeatures, ratioFeatures)
+
+log <- capture.output({
+
+modelLogitResult$ratio     <- evaluate(train, modelLogit,     features = fs)
+modelLDAResult$ratio       <- evaluate(train, modelLDA,       features = fs)
+modelQDAResult$ratio       <- evaluate(train, modelQDA,       features = fs)
+modelNBResult$ratio        <- evaluate(train, modelNB,        features = fs)
+modelTreeResult$ratio      <- evaluate(train, modelTree,      features = fs)
+modelRFResult$ratio        <- evaluate(train, modelRF,        features = fs)
+modelSVMLinearResult$ratio <- evaluate(train, modelSVMLinear, features = fs)
+modelSVMRadialResult$ratio <- evaluate(train, modelSVMRadial, features = fs)
+modelSVMPolyResult$ratio   <- evaluate(train, modelSVMPoly,   features = fs)
+modelKNNResult$ratio       <- evaluate(train, modelKNN,       features = fs)
+
+})
+
+results <- list(
+    "Logistic regression" = modelLogitResult$ratio,
+    "LDA"                 = modelLDAResult$ratio,
+    "QDA"                 = modelQDAResult$ratio,
+    "Naive Bayes"         = modelNBResult$ratio,
+    "Decision tree"       = modelTreeResult$ratio,
+    "Random forest"       = modelRFResult$ratio,
+    "KNN"                 = modelKNNResult$ratio,
+    "SVM linear"          = modelSVMLinearResult$ratio,
+    "SVM radial"          = modelSVMRadialResult$ratio,
+    "SVM poly"            = modelSVMPolyResult$ratio
+)
+visualizeResults(results)
+summarizeResults(results)
+```
+
+### Basic Features + Multiplication Features + Ratio Features + Square Features
+
+These models use three basic features and all additional features:
+
+```{r modelsSq, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE}
+fs <- c(basicFeatures, multFeatures, ratioFeatures, sqFeatures)
+
+log <- capture.output({
+
+modelLogitResult$sq     <- evaluate(train, modelLogit,     features = fs)
+modelLDAResult$sq       <- evaluate(train, modelLDA,       features = fs)
+modelQDAResult$sq       <- evaluate(train, modelQDA,       features = fs)
+modelNBResult$sq        <- evaluate(train, modelNB,        features = fs)
+modelTreeResult$sq      <- evaluate(train, modelTree,      features = fs)
+modelRFResult$sq        <- evaluate(train, modelRF,        features = fs)
+modelSVMLinearResult$sq <- evaluate(train, modelSVMLinear, features = fs)
+modelSVMRadialResult$sq <- evaluate(train, modelSVMRadial, features = fs)
+modelSVMPolyResult$sq   <- evaluate(train, modelSVMPoly,   features = fs)
+modelKNNResult$sq       <- evaluate(train, modelKNN,       features = fs)
+
+})
+
+results <- list(
+    "Logistic regression" = modelLogitResult$sq,
+    "LDA"                 = modelLDAResult$sq,
+    "QDA"                 = modelQDAResult$sq,
+    "Naive Bayes"         = modelNBResult$sq,
+    "Decision tree"       = modelTreeResult$sq,
+    "Random forest"       = modelRFResult$sq,
+    "KNN"                 = modelKNNResult$sq,
+    "SVM linear"          = modelSVMLinearResult$sq,
+    "SVM radial"          = modelSVMRadialResult$sq,
+    "SVM poly"            = modelSVMPolyResult$sq
+)
+visualizeResults(results)
+summarizeResults(results)
+```
+
+### Model Comparison
+
+Now we will compare all the models built so far, including the baseline models:
+
+```{r resultsAll, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE}
+results <- list(
+    "Always light"                = modelAlwaysLightResult,
+    "Half sum"                    = modelHalfSumResult,
+    "Standard luma"               = modelStandardLumaResult,
+    
+    "Logistic regression (basic)" = modelLogitResult$basic,
+    "LDA (basic)"                 = modelLDAResult$basic,
+    "QDA (basic)"                 = modelQDAResult$basic,
+    "Naive Bayes (basic)"         = modelNBResult$basic,
+    "Decision tree (basic)"       = modelTreeResult$basic,
+    "Random forest (basic)"       = modelRFResult$basic,
+    "KNN (basic)"                 = modelKNNResult$basic,
+    "SVM linear (basic)"          = modelSVMLinearResult$basic,
+    "SVM radial (basic)"          = modelSVMRadialResult$basic,
+    "SVM poly (basic)"            = modelSVMPolyResult$basic,
+    
+    "Logistic regression (mult)"  = modelLogitResult$mult,
+    "LDA (mult)"                  = modelLDAResult$mult,
+    "QDA (mult)"                  = modelQDAResult$mult,
+    "Naive Bayes (mult)"          = modelNBResult$mult,
+    "Decision tree (mult)"        = modelTreeResult$mult,
+    "Random forest (mult)"        = modelRFResult$mult,
+    "KNN (mult)"                  = modelKNNResult$mult,
+    "SVM linear (mult)"           = modelSVMLinearResult$mult,
+    "SVM radial (mult)"           = modelSVMRadialResult$mult,
+    "SVM poly (mult)"             = modelSVMPolyResult$mult,
+    
+    "Logistic regression (ratio)" = modelLogitResult$ratio,
+    "LDA (ratio)"                 = modelLDAResult$ratio,
+    "QDA (ratio)"                 = modelQDAResult$ratio,
+    "Naive Bayes (ratio)"         = modelNBResult$ratio,
+    "Decision tree (ratio)"       = modelTreeResult$ratio,
+    "Random forest (ratio)"       = modelRFResult$ratio,
+    "KNN (ratio)"                 = modelKNNResult$ratio,
+    "SVM linear (ratio)"          = modelSVMLinearResult$ratio,
+    "SVM radial (ratio)"          = modelSVMRadialResult$ratio,
+    "SVM poly (ratio)"            = modelSVMPolyResult$ratio,
+    
+    "Logistic regression (sq)"    = modelLogitResult$sq,
+    "LDA (sq)"                    = modelLDAResult$sq,
+    "QDA (sq)"                    = modelQDAResult$sq,
+    "Naive Bayes (sq)"            = modelNBResult$sq,
+    "Decision tree (sq)"          = modelTreeResult$sq,
+    "Random forest (sq)"          = modelRFResult$sq,
+    "KNN (sq)"                    = modelKNNResult$sq,
+    "SVM linear (sq)"             = modelSVMLinearResult$sq,
+    "SVM radial (sq)"             = modelSVMRadialResult$sq,
+    "SVM poly (sq)"               = modelSVMPolyResult$sq
+)
+summary <- summarizeResults(results)
+summary[,2:5] <- round(summary[,2:5], 5)
+summary
+```
+
+This is a visualizaton of 10 best models:
+
+```{r visAll, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE}
+summaryTop10 <- summary[1:10,]$Method
+visualizeResults(results[names(results) %in% summaryTop10])
+```
+
+# Conclusions

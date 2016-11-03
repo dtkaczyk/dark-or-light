@@ -1,7 +1,7 @@
 library(ggplot2)
 
 evaluate <- function(data, modelFunction, ...) {
-    set.seed(2434)
+    set.seed(2690)
     dataRand <- data[sample(nrow(data)),]
     row.names(dataRand) <- NULL
     accuracy <- rep(0, 10)
