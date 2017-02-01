@@ -105,6 +105,7 @@ shinyServer(function(input, output) {
                               fill = twoColors$color)) +
                 geom_bar(stat = "identity") + 
                 scale_fill_manual(values = colorScale) +
+                scale_y_continuous(breaks = seq(0, 1, by = 0.1)) +
                 xlab("Colors") + ylab("Fraction of the image") +
                 theme(text = element_text(size = 20)) +
                 guides(fill = FALSE)
