@@ -17,11 +17,11 @@ The issue is not trivial for a couple of reasons:
 Problem Statement
 -----------------
 
-We will represent colors using RGB model. In this model a color \(c\) is represented by a vector of three numbers \(c = [c_R, c_G, c_B]\), where the red, green and blue intensities are normalized, that is \(0 \leq c_R, c_G, c_B \leq 1\). In this model, white is represented by a vector \(white = [1, 1, 1]\), black by \(black = [0, 0, 0]\), blue will be \(blue = [0, 0, 1]\), and so on.
+We will represent colors using RGB model. In this model a color *c* is represented by a vector of three numbers *c* = \[*c*<sub>*R*</sub>, *c*<sub>*G*</sub>, *c*<sub>*B*</sub>\], where the red, green and blue intensities are normalized, that is 0 ≤ *c*<sub>*R*</sub>, *c*<sub>*G*</sub>, *c*<sub>*B*</sub> ≤ 1. In this model, white is represented by a vector *w**h**i**t**e* = \[1, 1, 1\], black by *b**l**a**c**k* = \[0, 0, 0\], blue will be *b**l**u**e* = \[0, 0, 1\], and so on.
 
 Color's luminance will be represented by a single categorical variable with two levels: *dark* and *light*.
 
-The problem analyzed in this document is the following: find a function \(L: [0,1]^3 \rightarrow \{d,l\}\), which for a given color determines its luminance.
+The problem analyzed in this document is the following: find a function *L* : \[0, 1\]<sup>3</sup> → {*d*, *l*}, which for a given color determines its luminance.
 
 Data
 ====
@@ -189,7 +189,7 @@ Baseline Models
 Let's start with a few simple baseline models, which do not require any training at all. We will use the following models:
 
 -   **modelAlwaysLight** predicts *light* for all data points,
--   **modelHalfSum** predicts *light* when average color components intensity is greater than or equal 0.5, that is when \(c_R + c_G + c_B \geq 1.5\)
+-   **modelHalfSum** predicts *light* when average color components intensity is greater than or equal 0.5, that is when *c*<sub>*R*</sub> + *c*<sub>*G*</sub> + *c*<sub>*B*</sub> ≥ 1.5
 -   **modelStandardLuma** uses the standard luma definition for digital formats (see <https://en.wikipedia.org/wiki/Luma_%28video%29>)
 
 ``` r
@@ -366,5 +366,41 @@ This is a visualizaton of 10 best models:
 
 ![](colorAnalysis_files/figure-markdown_github/visAll-1.png)
 
+It seems that SVM model with radial kernel and basic combined with multiplication-based features achieves the best results, at the same time beating the most other models in statistical tests. Let's make one final evaluation of the winning model using the held-out dataset:
+
+    ## Confusion Matrix and Statistics
+    ## 
+    ##           Reference
+    ## Prediction  D  L
+    ##          D 43  3
+    ##          L  2 50
+    ##                                           
+    ##                Accuracy : 0.949           
+    ##                  95% CI : (0.8849, 0.9832)
+    ##     No Information Rate : 0.5408          
+    ##     P-Value [Acc > NIR] : <2e-16          
+    ##                                           
+    ##                   Kappa : 0.8974          
+    ##  Mcnemar's Test P-Value : 1               
+    ##                                           
+    ##             Sensitivity : 0.9556          
+    ##             Specificity : 0.9434          
+    ##          Pos Pred Value : 0.9348          
+    ##          Neg Pred Value : 0.9615          
+    ##              Prevalence : 0.4592          
+    ##          Detection Rate : 0.4388          
+    ##    Detection Prevalence : 0.4694          
+    ##       Balanced Accuracy : 0.9495          
+    ##                                           
+    ##        'Positive' Class : D               
+    ## 
+
 Conclusions
 ===========
+
+In this document we examined the possibility of automated classifying a given color as *light* or *dark* based on their RGB components. The most important findings of the analysis include:
+
+-   green component is the most correlated with the target luminance, and blue component - the least
+-   a simple linear model based on the standard luma definition for digital formats performs well, acheiving the mean accuracy of 0.9052381 on our training set
+-   the best model found is SVM model with radial kernel and basic combined with multiplication-based features, achieving the mean accuracy of 0.95 on our training set
+-   the accuracy of the best model on our held-out set (and thus our best estimate for the accuracy of the chosen solution is 0.9489796

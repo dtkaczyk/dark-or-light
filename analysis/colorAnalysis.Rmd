@@ -486,4 +486,30 @@ summaryTop10 <- summary[1:10,]$Method
 visualizeResults(results[names(results) %in% summaryTop10])
 ```
 
+It seems that SVM model with radial kernel and basic combined with multiplication-based features
+achieves the best results, at the same time beating the most other models in statistical tests.
+Let's make one final evaluation of the winning model using the held-out dataset:
+
+```{r finalEval, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE}
+test <- extractFeatures(test)
+testResults <- trainAndPredict(train, test, "svmRadial", 
+                               features = c(basicFeatures, multFeatures))
+cm <- confusionMatrix(test$Lum, testResults)
+cm
+meanStandardLuma <- mean(evaluate(train, modelStandardLuma))
+meanSVMRadial <- mean(evaluate(train, modelSVMRadial, features = c(basicFeatures, multFeatures)))
+```
+
 # Conclusions
+
+In this document we examined the possibility of automated classifying a given color as *light* or
+*dark* based on their RGB components. The most important findings of the analysis include:
+
+  * green component is the most correlated with the target luminance, and blue component - the least
+  * a simple linear model based on the standard luma definition for digital formats performs well,
+  acheiving the mean accuracy of `r meanStandardLuma` on our training set
+  * the best model found is SVM model with radial kernel and basic combined with
+  multiplication-based features, achieving the mean accuracy of `r meanSVMRadial` on our training
+  set
+  * the accuracy of the best model on our held-out set (and thus our best estimate for the accuracy
+  of the chosen solution is `r cm$overall[["Accuracy"]]`
