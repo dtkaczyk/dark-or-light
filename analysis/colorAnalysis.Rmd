@@ -505,6 +505,7 @@ meanSVMRadial <- mean(evaluate(train, modelSVMRadial, features = c(basicFeatures
 In this document we examined the possibility of automated classifying a given color as *light* or
 *dark* based on their RGB components. The most important findings of the analysis include:
 
+  * the problem is not trivial, but fairly easy to solve with standard machine learning approach
   * green component is the most correlated with the target luminance, and blue component - the least
   * a simple linear model based on the standard luma definition for digital formats performs well,
   acheiving the mean accuracy of `r meanStandardLuma` on our training set
@@ -513,3 +514,11 @@ In this document we examined the possibility of automated classifying a given co
   set
   * the accuracy of the best model on our held-out set (and thus our best estimate for the accuracy
   of the chosen solution is `r cm$overall[["Accuracy"]]`
+
+Limitations:
+
+  * Current document lacks error analysis. Maybe examining the most typical errors could result in
+  futher improvement?
+  * For time performance purposes, we used the default model parameter choosing functionality
+  provided by caret, which is limited to checking a few values only. Perhaps fine-tuning the chosen
+  model would increase the overall acuracy as well?

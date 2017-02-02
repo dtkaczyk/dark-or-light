@@ -400,7 +400,13 @@ Conclusions
 
 In this document we examined the possibility of automated classifying a given color as *light* or *dark* based on their RGB components. The most important findings of the analysis include:
 
+-   the problem is not trivial, but fairly easy to solve with standard machine learning approach
 -   green component is the most correlated with the target luminance, and blue component - the least
 -   a simple linear model based on the standard luma definition for digital formats performs well, acheiving the mean accuracy of 0.9052381 on our training set
 -   the best model found is SVM model with radial kernel and basic combined with multiplication-based features, achieving the mean accuracy of 0.95 on our training set
 -   the accuracy of the best model on our held-out set (and thus our best estimate for the accuracy of the chosen solution is 0.9489796
+
+Limitations:
+
+-   Current document lacks error analysis. Maybe examining the most typical errors could result in futher improvement?
+-   For time performance purposes, we used the default model parameter choosing functionality provided by caret, which is limited to checking a few values only. Perhaps fine-tuning the chosen model would increase the overall acuracy as well?
